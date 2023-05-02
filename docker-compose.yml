@@ -6,8 +6,8 @@ services:
       args:
         - CARLA_VERSION=${CARLA_VERSION}
       cache_from:
-        - faizansana/syde655:latest
-    image: faizansana/syde655:latest
+        - faizansana/intersection-driving:latest
+    image: faizansana/intersection-driving:latest
     # ports:
     #   - "${GUI_TOOLS_VNC_PORT}:5900"
     environment:
