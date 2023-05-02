@@ -32,15 +32,24 @@ COPY --chown=docker ./supervisord.conf /etc/supervisor/supervisord.conf
 RUN chown -R docker:docker /etc/supervisor
 RUN chmod 777 /var/log/supervisor/
 
-# Install Python environment
-ENV VIRTUAL_ENV=/home/docker/env
-RUN python3 -m venv $VIRTUAL_ENV
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY ./requirements.txt /tmp
-RUN pip install --upgrade pip && pip install -r /tmp/requirements.txt && chown -R docker:docker /home/docker/env
+# Install miniconda
+ENV CONDA_DIR /opt/conda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+     rm ~/miniconda.sh && \
+     echo "export PATH=/opt/conda/bin:$PATH" >> ~/.bashrc
+# Putting conda in path to use 'conda activate'
+ENV PATH=$CONDA_DIR/bin:$PATH
+
+
+COPY ./environment.yml /tmp
+RUN conda update conda \
+    && conda env create -n driving -f /tmp/environment.yml
 
 USER docker:docker
+RUN conda init && \
+    echo "conda activate driving" >> ~/.bashrc
 ENV SHELL=/bin/bash
 ENV DISPLAY=:1.0
 WORKDIR /home/docker
