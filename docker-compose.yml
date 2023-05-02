@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  main_container:
+    build:
+      context: .
+      args:
+        - CARLA_VERSION=${CARLA_VERSION}
+      cache_from:
+        - faizansana/syde655:latest
+    image: faizansana/syde655:latest
+    # ports:
+    #   - "${GUI_TOOLS_VNC_PORT}:5900"
+    environment:
+      - VNC_PORT=${GUI_TOOLS_VNC_PORT}
+    user: ${FIXUID}:${FIXGID}
+    volumes:
+      - ./:/home/docker/src
+    depends_on:
+      - carla_server
+
+  carla_server:
+    image: "carlasim/carla:${CARLA_VERSION}" 
+    runtime: nvidia
+    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -quality-level=${CARLA_QUALITY} -world-port=2000 -nosound -carla-server -fps=30"
+    # ports:
+    #   - "2000:2000"
