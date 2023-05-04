@@ -1,0 +1,3 @@
+[submodule "src/gym-carla"]
+	path = src/gym_carla
+	url = https://github.com/faizansana/gym-carla.git
