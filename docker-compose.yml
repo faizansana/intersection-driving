@@ -20,7 +20,13 @@ services:
 
   carla_server:
     image: "carlasim/carla:${CARLA_VERSION}" 
-    runtime: nvidia
     command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -nosound -carla-server -fps=30"
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['1']
+            capabilities: [gpu]
     # ports:
     #   - "2000:2000"
