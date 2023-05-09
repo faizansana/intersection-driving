@@ -44,8 +44,9 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 
 
 COPY ./environment.yml /tmp
-RUN conda update conda \
-    && conda env create -n driving -f /tmp/environment.yml
+RUN conda update conda && \
+    conda env create -n driving -f /tmp/environment.yml && \
+    conda clean -a -y
 
 USER docker:docker
 RUN conda init && \
