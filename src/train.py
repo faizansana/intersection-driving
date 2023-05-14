@@ -11,13 +11,14 @@ if __name__ == "__main__":
 
     # parameters for the network
     NEURONS = (400, 300)
-    LEARNING_RATE = 1e-3
+    LEARNING_RATE = 1e-4
     BUFFER_SIZE = 100
     LEARNING_STARTS = 10
     GAMMA = 0.98
     TRAIN_FREQ = (1, "episode")
     GRADIENT_STEPS = -1
     VERBOSE = 1
+    TRAINING_TIMESTEPS = 2e4
 
 
     params = {
@@ -32,11 +33,11 @@ if __name__ == "__main__":
         "continuous_accel_range": [-3.0, 3.0],  # continuous acceleration range
         "continuous_steer_range": [-0.3, 0.3],  # continuous steering angle range
         "ego_vehicle_filter": "vehicle.lincoln*",  # filter for defining ego vehicle
-        "host": "172.18.0.4",  # which host to use
+        "host": "192.168.240.4",  # which host to use
         "port": 2000,  # connection port
         "town": "Town03",  # which town to simulate
-        "task_mode": "random",  # mode of the task, [random, roundabout (only for Town03)]
-        "max_time_episode": 1000,  # maximum timesteps per episode
+        "task_mode": "intersection",  # mode of the task, [random, roundabout (only for Town03)]
+        "max_time_episode": 500,  # maximum timesteps per episode
         "max_waypt": 12,  # maximum number of waypoints
         "obs_range": 32,  # observation range (meter)
         "lidar_bin": 0.125,  # bin size of lidar sensor (meter)
@@ -46,7 +47,7 @@ if __name__ == "__main__":
         "max_ego_spawn_times": 200,  # maximum times to spawn ego vehicle
         "display_route": True,  # whether to render the desired route
         "pixor_size": 64,  # size of the pixor labels
-        "pixor": False,  # whether to output PIXOR observation
+        "pixor": False  # whether to output PIXOR observation
     }
 
     env = gym.make('carla-v0', params=params, apply_api_compatibility=True)
@@ -63,5 +64,5 @@ if __name__ == "__main__":
                  gradient_steps=GRADIENT_STEPS,
                  verbose=VERBOSE,
                  tensorboard_log="./logs/DDPG/")
-    model.learn(total_timesteps=2e3, log_interval=10, progress_bar=True)
+    model.learn(total_timesteps=TRAINING_TIMESTEPS, log_interval=10, progress_bar=True)
     model.save("DDPG_carla")
