@@ -8,6 +8,7 @@ import yaml
 from stable_baselines3 import DDPG, PPO
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.monitor import Monitor
+
 from train_config import SaveOnBestTrainingRewardCallback
 
 
@@ -100,7 +101,8 @@ def setup_env(env_name: str, log_dir: str, carla_host: str) -> gym.Env:
     else:
         raise ValueError(f"Unknown environment: {env_name}")
 
-    env = Monitor(env, log_dir + "/")
+    if log_dir:
+        env = Monitor(env, log_dir + "/")
     return env
 
 
