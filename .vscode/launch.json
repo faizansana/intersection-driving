@@ -8,6 +8,26 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
+            "program": "${workspaceFolder}/src/test_model.py",
+            "console": "integratedTerminal",
+            "args": [
+                "--model-path",
+                "./Training/Models/DDPG/2023-05-14_21-26-11/custom_carla_gym_2023-05-14_21-26-11.zip",
+                "-e",
+                "custom_carla_gym",
+                "--carla-host",
+                "192.168.240.4",
+                "-v",
+                "0"
+            ],
+            "justMyCode": true,
+            "cwd": "${fileDirname}"
+        },
+
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
             "program": "${workspaceFolder}/src/train.py",
             "console": "integratedTerminal",
             "justMyCode": true,
