@@ -8,6 +8,23 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
+            "program": "${workspaceFolder}/src/train.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--model",
+                "DDPG",
+                "-e",
+                "custom_carla_gym",
+                "--carla-host",
+                "192.168.240.4"
+            ],
+            "cwd": "${fileDirname}"
+        },
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
