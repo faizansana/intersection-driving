@@ -16,17 +16,33 @@ services:
     volumes:
       - ./:/home/docker/src
     depends_on:
-      - carla_server
+      - carla_server_low
+      - carla_server_high
 
-  carla_server:
-    image: "carlasim/carla:${CARLA_VERSION}" 
-    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -nosound -carla-server -fps=30"
+  carla_server_low:
+    image: "carlasim/carla:${CARLA_VERSION}"
+    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=Low -nosound -carla-server -fps=30"
+    restart: always
     deploy:
+      replicas: 2
       resources:
         reservations:
           devices:
           - driver: nvidia
-            device_ids: ['1']
+            device_ids: ['3']
+            capabilities: [gpu]
+  
+  carla_server_high:
+    image: "carlasim/carla:${CARLA_VERSION}"
+    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=Epic -nosound -carla-server -fps=30"
+    restart: always
+    deploy:
+      replicas: 2
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['4']
             capabilities: [gpu]
     # ports:
     #   - "2000:2000"
