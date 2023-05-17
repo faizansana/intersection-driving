@@ -3,7 +3,7 @@ import datetime
 import os
 import sys
 
-import gymnasium as gym
+import gym
 import yaml
 from stable_baselines3 import DDPG, PPO
 from stable_baselines3.common.base_class import BaseAlgorithm
