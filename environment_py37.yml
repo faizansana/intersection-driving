@@ -104,19 +104,23 @@ dependencies:
       - markupsafe==2.1.2
       - matplotlib==3.5.3
       - mdurl==0.1.2
+      - networkx==2.6.3
       - oauthlib==3.2.2
       - packaging==23.1
       - pandas==1.3.5
       - protobuf==3.20.3
       - pyasn1==0.5.0
       - pyasn1-modules==0.3.0
+      - pygame==2.4.0
       - pygments==2.15.1
       - pyparsing==3.0.9
       - python-dateutil==2.8.2
       - pytz==2023.3
+      - pyyaml==6.0
       - requests-oauthlib==1.3.1
       - rich==13.3.5
       - rsa==4.9
+      - sb3-contrib==1.8.0
       - stable-baselines3==1.8.0
       - tensorboard==2.11.2
       - tensorboard-data-server==0.6.1
