@@ -44,6 +44,12 @@ def parse_arguments():
         default="carla_server",
         metavar="IP",
         type=str)
+    argparser.add_argument(
+        "--tm-port",
+        help="Port of Traffic Manager server",
+        default=8000,
+        metavar="PORT",
+        type=int)
 
     return argparser
 
@@ -58,13 +64,13 @@ def train(model: BaseAlgorithm, env: gym.Env, timesteps: int, model_dir: os.path
     model.save(os.path.join(model_dir, "final_model"))
 
 
-def setup_env(env_name: str, log_dir: str, carla_host: str) -> gym.Env:
+def setup_env(env_name: str, log_dir: str, carla_host: str, tm_port: int = 8000) -> gym.Env:
     """Setup environment"""
     if env_name == "custom_carla_gym":
         sys.path.append("./custom_carla_gym")
         from custom_carla_gym.carla_env_custom import CarlaEnv
         cfg = yaml.safe_load(open("./custom_carla_gym/config.yaml"))
-        env = CarlaEnv(cfg=cfg, host=carla_host)
+        env = CarlaEnv(cfg=cfg, host=carla_host, tm_port=tm_port)
 
     elif env_name == "gym_carla":
         sys.path.append("./gym_carla")
@@ -122,7 +128,7 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
 
     # Create environment
-    env = setup_env(args.env, log_dir, args.carla_host)
+    env = setup_env(args.env, log_dir, args.carla_host, args.tm_port)
 
     LEARNING_RATE = 1e-4
     BUFFER_SIZE = 100000
