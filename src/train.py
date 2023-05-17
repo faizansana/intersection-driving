@@ -5,7 +5,8 @@ import sys
 
 import gymnasium as gym
 import yaml
-from stable_baselines3 import DDPG, PPO
+from sb3_contrib import RecurrentPPO
+from stable_baselines3 import DDPG, PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.monitor import Monitor
 
@@ -19,7 +20,7 @@ def parse_arguments():
         help="Model to train",
         default="DDPG",
         metavar="NAME",
-        choices=["DDPG", "PPO"])
+        choices=["DDPG", "PPO", "RecurrentPPO", "SAC"])
     argparser.add_argument(
         "-e", "--env",
         help="Environment to train on. Path of env is appended",
@@ -158,7 +159,26 @@ def main():
                     gamma=GAMMA,
                     policy_kwargs={"net_arch": [400, 300]},
                     tensorboard_log=log_dir)
-
+    elif args.model == "SAC":
+        model = SAC("MlpPolicy",
+                    env,
+                    learning_rate=LEARNING_RATE,
+                    buffer_size=BUFFER_SIZE,
+                    learning_starts=LEARNING_STARTS,
+                    gamma=GAMMA,
+                    policy_kwargs={"net_arch": [400, 300]},
+                    train_freq=TRAIN_FREQ,
+                    gradient_steps=GRADIENT_STEPS,
+                    verbose=VERBOSE,
+                    tensorboard_log=log_dir)
+    elif args.model == "RecurrentPPO":
+        model = RecurrentPPO("MlpLstmPolicy",
+                             env,
+                             learning_rate=LEARNING_RATE,
+                             gamma=GAMMA,
+                             tensorboard_log=log_dir,
+                             verbose=VERBOSE
+                             )
     # Train model
     train(model, env, args.timesteps, model_dir, log_dir, save_path, verbose=VERBOSE)
 

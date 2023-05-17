@@ -1,7 +1,8 @@
 import argparse
 
 import pygame
-from stable_baselines3 import DDPG, PPO
+from sb3_contrib import RecurrentPPO
+from stable_baselines3 import DDPG, PPO, SAC
 from tqdm import tqdm
 
 from train import setup_env
@@ -61,6 +62,10 @@ def main():
         model = PPO.load(args.model_path)
     elif "DDPG" in args.model_path:
         model = DDPG.load(args.model_path)
+    elif "SAC" in args.model_path:
+        model = SAC.load(args.model_path)
+    elif "RecurrentPPO" in args.model_path:
+        model = RecurrentPPO.load(args.model_path)
     else:
         raise ValueError("Model not supported")
 
