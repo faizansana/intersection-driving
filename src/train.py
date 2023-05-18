@@ -158,6 +158,7 @@ def main():
                     learning_rate=LEARNING_RATE,
                     gamma=GAMMA,
                     policy_kwargs={"net_arch": [400, 300]},
+                    verbose=VERBOSE,
                     tensorboard_log=log_dir)
     elif args.model == "SAC":
         model = SAC("MlpPolicy",
