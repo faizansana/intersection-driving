@@ -6,7 +6,7 @@ import sys
 import gym
 import yaml
 from sb3_contrib import RecurrentPPO
-from stable_baselines3 import DDPG, PPO, SAC
+from stable_baselines3 import DDPG, DQN, PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.monitor import Monitor
 
@@ -20,7 +20,7 @@ def parse_arguments():
         help="Model to train",
         default="DDPG",
         metavar="NAME",
-        choices=["DDPG", "PPO", "RecurrentPPO", "SAC"])
+        choices=["DDPG", "PPO", "RecurrentPPO", "SAC", "DQN"])
     argparser.add_argument(
         "-e", "--env",
         help="Environment to train on. Path of env is appended",
@@ -51,6 +51,12 @@ def parse_arguments():
         default=8000,
         metavar="PORT",
         type=int)
+    argparser.add_argument(
+        "--config-file",
+        help="Path to config file",
+        default="./custom_carla_gym/config.yaml",
+        metavar="PATH",
+        type=str)
 
     return argparser
 
@@ -65,12 +71,12 @@ def train(model: BaseAlgorithm, env: gym.Env, timesteps: int, model_dir: os.path
     model.save(os.path.join(model_dir, "final_model"))
 
 
-def setup_env(env_name: str, log_dir: str, carla_host: str, tm_port: int = 8000) -> gym.Env:
+def setup_env(env_name: str, log_dir: str, carla_host: str, tm_port: int = 8000, config_file: str = "./custom_carla_gym/config.yaml") -> gym.Env:
     """Setup environment"""
     if env_name == "custom_carla_gym":
         sys.path.append("./custom_carla_gym")
         from custom_carla_gym.carla_env_custom import CarlaEnv
-        cfg = yaml.safe_load(open("./custom_carla_gym/config.yaml"))
+        cfg = yaml.safe_load(open(config_file))
         env = CarlaEnv(cfg=cfg, host=carla_host, tm_port=tm_port)
 
     elif env_name == "gym_carla":
@@ -129,7 +135,7 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
 
     # Create environment
-    env = setup_env(args.env, log_dir, args.carla_host, args.tm_port)
+    env = setup_env(args.env, log_dir, args.carla_host, args.tm_port, args.config_file)
 
     LEARNING_RATE = 1e-4
     BUFFER_SIZE = 100000
@@ -180,6 +186,17 @@ def main():
                              tensorboard_log=log_dir,
                              verbose=VERBOSE
                              )
+    elif args.model == "DQN":
+        model = DQN("MlpPolicy",
+                    env,
+                    learning_rate=LEARNING_RATE,
+                    buffer_size=BUFFER_SIZE,
+                    learning_starts=LEARNING_STARTS,
+                    gamma=GAMMA,
+                    train_freq=TRAIN_FREQ,
+                    gradient_steps=GRADIENT_STEPS,
+                    verbose=VERBOSE,
+                    tensorboard_log=log_dir)
     # Train model
     train(model, env, args.timesteps, model_dir, log_dir, save_path, verbose=VERBOSE)
 
