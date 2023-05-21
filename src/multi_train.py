@@ -18,7 +18,7 @@ def run_training(model: str, tm_port: int, server_name: str, config_file: str = 
         with open(log_file, 'w') as output:
             subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logging.error(f"Run {model} failed with error: {e}")
+        logging.exception(f"Run {model} failed with error: {e}")
 
 
 processes = []
