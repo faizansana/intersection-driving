@@ -45,7 +45,7 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                 # New best model, you could save the agent here
                 if mean_reward > self.best_mean_reward:
                     self.best_mean_reward = mean_reward
-                    save_path = os.path.join(self.save_path, f"best_model_{self.num_timesteps}_steps")
+                    save_path = os.path.join(self.save_path, "best_model")
                     # Example for saving best model
                     if self.verbose > 0:
                         print(f"Saving new best model to {save_path}")
