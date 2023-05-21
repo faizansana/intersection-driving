@@ -1,4 +1,3 @@
-name: highway_env
 channels:
   - pytorch
   - nvidia
@@ -139,8 +138,9 @@ dependencies:
       - requests-oauthlib==1.3.1
       - rich==13.3.3
       - rsa==4.9
+      - sb3-contrib==2.0.0a9
       - scipy==1.10.1
-      - stable-baselines3==2.0.0a2
+      - stable-baselines3==2.0.0a9
       - tensorboard==2.12.1
       - tensorboard-data-server==0.7.0
       - tensorboard-plugin-wit==1.8.1
