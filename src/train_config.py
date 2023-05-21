@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.results_plotter import load_results, ts2xy
@@ -23,9 +25,8 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
 
     def _init_callback(self) -> None:
         # Create folder if needed
-        # if self.save_path is not None:
-        #     os.makedirs(self.save_path, exist_ok=True)
-        pass
+        if self.save_path is not None:
+            os.makedirs(self.save_path, exist_ok=True)
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
@@ -44,8 +45,9 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                 # New best model, you could save the agent here
                 if mean_reward > self.best_mean_reward:
                     self.best_mean_reward = mean_reward
+                    save_path = os.path.join(self.save_path, f"best_model_{self.num_timesteps}_steps")
                     # Example for saving best model
                     if self.verbose > 0:
-                        print(f"Saving new best model to {self.save_path}")
-                    self.model.save(self.save_path)
+                        print(f"Saving new best model to {save_path}")
+                    self.model.save(save_path)
         return True

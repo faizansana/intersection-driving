@@ -8,24 +8,36 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "cwd": "${workspaceFolder}/src"
+        },
+        {
+            "name": "Python: Debug test_model.py",
+            "type": "python",
+            "request": "launch",
             "program": "${workspaceFolder}/src/test_model.py",
             "console": "integratedTerminal",
             "args": [
-                "--model-path",
-                "./Training/Models/DDPG/2023-05-14_21-26-11/custom_carla_gym_2023-05-14_21-26-11.zip",
+                "./Training/Models/DQN/2023-05-21_00-37-04/custom_carla_gym_2023-05-21_00-37-04.zip",
                 "-e",
                 "custom_carla_gym",
                 "--carla-host",
-                "192.168.240.4",
+                "carla_server_debug-1",
+                "--tm-port",
+                "9001",
+                "--config-file",
+                "./custom_carla_gym/config_discrete.yaml",
                 "-v",
-                "0"
+                "1",
+                "-d"
             ],
             "justMyCode": true,
-            "cwd": "${fileDirname}"
+            "cwd": "${workspaceFolder}/src"
         },
-
         {
-            "name": "Python: Current File",
+            "name": "Python: Debug train.py",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/src/train.py",
@@ -37,18 +49,15 @@
                 "-e",
                 "custom_carla_gym",
                 "--carla-host",
-                "192.168.240.4"
+                "carla_server_debug-1",
+                "--tm-port",
+                "9001",
+                "--config-file",
+                "./custom_carla_gym/config_continuous.yaml",
+                "-v",
+                "1"
             ],
-            "cwd": "${fileDirname}"
-        },
-        {
-            "name": "Python: Current File",
-            "type": "python",
-            "request": "launch",
-            "program": "${file}",
-            "console": "integratedTerminal",
-            "justMyCode": true,
-            "cwd": "${fileDirname}"
+            "cwd": "${workspaceFolder}/src"
         }
     ]
 }

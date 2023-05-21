@@ -61,10 +61,10 @@ def parse_arguments():
     return argparser
 
 
-def train(model: BaseAlgorithm, env: gym.Env, timesteps: int, model_dir: os.path, log_dir: os.path, save_path: os.path, check_freq: int = 20, verbose: int = 0) -> None:
+def train(model: BaseAlgorithm, env: gym.Env, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 20, verbose: int = 0) -> None:
     """Train an agent on a given environment for a given number of timesteps"""
     # Create callback
-    callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=save_path, verbose=verbose)
+    callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
     # Train
     model.learn(total_timesteps=timesteps, callback=callback, progress_bar=True)
     # Save final model
@@ -129,7 +129,6 @@ def main():
 
     # Create model and log directory
     model_dir = os.path.join("Training", "Models", args.model, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-    save_path = os.path.join(model_dir, f"{args.env}_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}")
 
     log_dir = os.path.join(model_dir, "logs")
     os.makedirs(log_dir, exist_ok=True)
@@ -198,7 +197,7 @@ def main():
                     verbose=VERBOSE,
                     tensorboard_log=log_dir)
     # Train model
-    train(model, env, args.timesteps, model_dir, log_dir, save_path, verbose=VERBOSE)
+    train(model, env, args.timesteps, model_dir, log_dir, verbose=VERBOSE)
 
 
 if __name__ == "__main__":
