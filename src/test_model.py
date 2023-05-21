@@ -1,5 +1,6 @@
 import argparse
 
+import numpy as np
 import pygame
 from sb3_contrib import RecurrentPPO
 from stable_baselines3 import DDPG, DQN, PPO, SAC
@@ -11,9 +12,8 @@ from train import setup_env
 def parse_arguments():
     argparser = argparse.ArgumentParser(description="Test Agent")
     argparser.add_argument(
-        "-m", "--model-path",
+        "modelpath",
         help="Path to model to test",
-        default="",
         metavar="PATH",
         type=str)
     argparser.add_argument(
@@ -46,6 +46,18 @@ def parse_arguments():
         help="Whether to display the environment",
         action="store_true"
     )
+    argparser.add_argument(
+        "--tm-port",
+        help="Port of Traffic Manager server",
+        default=8000,
+        metavar="PORT",
+        type=int)
+    argparser.add_argument(
+        "--config-file",
+        help="Path to config file",
+        default="./custom_carla_gym/config_continuous.yaml",
+        metavar="PATH",
+        type=str)
 
     return argparser
 
@@ -55,24 +67,19 @@ def main():
     args = parse_arguments().parse_args()
 
     # Setup environment
-    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host)
+    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, tm_port=args.tm_port, config_file=args.config_file)
 
     # Load model
-    if args.model_path == "":
-        raise ValueError("No model path provided")
-
-    # Check if model path string contains PPO
-
-    if "PPO" in args.model_path:
-        model = PPO.load(args.model_path)
-    elif "DDPG" in args.model_path:
-        model = DDPG.load(args.model_path)
-    elif "SAC" in args.model_path:
-        model = SAC.load(args.model_path)
-    elif "RecurrentPPO" in args.model_path:
-        model = RecurrentPPO.load(args.model_path)
-    elif "DQN" in args.model_path:
-        model = DQN.load(args.model_path)
+    if "RecurrentPPO" in args.modelpath:
+        model = RecurrentPPO.load(args.modelpath)
+    elif "PPO" in args.modelpath:
+        model = PPO.load(args.modelpath)
+    elif "DDPG" in args.modelpath:
+        model = DDPG.load(args.modelpath)
+    elif "SAC" in args.modelpath:
+        model = SAC.load(args.modelpath)
+    elif "DQN" in args.modelpath:
+        model = DQN.load(args.modelpath)
     else:
         raise ValueError("Model not supported")
 
@@ -96,9 +103,15 @@ def main():
             obs = env.reset()
             done = False
 
+            # cell and hidden state of the LSTM
+            lstm_states = None
+            # Episode start signals are used to reset the lstm states
+            episode_starts = np.zeros((1,), dtype=bool)
+
             while not done:
-                action, _ = model.predict(obs, deterministic=True)
+                action, lstm_states = model.predict(obs, state=lstm_states, episode_start=episode_starts, deterministic=True)
                 obs, reward, done, info = env.step(action)
+                episode_starts = done
 
                 episode_length += 1
                 reward_sum += reward
