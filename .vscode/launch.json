@@ -49,7 +49,13 @@
                 "-e",
                 "custom_carla_gym",
                 "--carla-host",
-                "intersection-driving-carla_server_lowgpu-1"
+                "192.168.32.10",
+                "--tm-port",
+                "9001",
+                "--config-file",
+                "./custom_carla_gym/config_continuous.yaml",
+                "-v",
+                "1"
             ],
             "cwd": "${workspaceFolder}/src"
         }
