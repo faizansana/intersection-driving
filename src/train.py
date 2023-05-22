@@ -57,16 +57,22 @@ def parse_arguments():
         default="./custom_carla_gym/config.yaml",
         metavar="PATH",
         type=str)
+    argparser.add_argument(
+        "--model-path",
+        help="Path to load model for RETRAINING",
+        default=None,
+        metavar="PATH",
+        type=str)
 
     return argparser
 
 
-def train(model: BaseAlgorithm, env: gym.Env, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 20, verbose: int = 0) -> None:
+def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 20, verbose: int = 0) -> None:
     """Train an agent on a given environment for a given number of timesteps"""
     # Create callback
     callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
     # Train
-    model.learn(total_timesteps=timesteps, callback=callback, progress_bar=True)
+    model.learn(total_timesteps=timesteps, callback=callback, progress_bar=True, reset_num_timesteps=False)
     # Save final model
     model.save(os.path.join(model_dir, "final_model"))
 
@@ -115,27 +121,17 @@ def setup_env(env_name: str, log_dir: str, carla_host: str, tm_port: int = 8000,
         raise ValueError(f"Unknown environment: {env_name}")
 
     if log_dir:
-        env = Monitor(env, log_dir + "/")
+        # There seems to be a bug in Monitor, so this workaround is used.
+        # If override_existing is set to False and monitor.csv does not exist, it creates the file but doesn't add header.
+        # This is needed by the callback to function properly.
+        if os.path.exists(os.path.join(log_dir, "monitor.csv")):
+            env = Monitor(env, log_dir + "/", override_existing=False)
+        else:
+            env = Monitor(env, log_dir + "/")
     return env
 
 
-def main():
-    # Parse arguments
-    args = parse_arguments().parse_args()
-
-    print("------", args.model, "------")
-    print("------", args.env, "------")
-    print("------", args.timesteps, "------")
-
-    # Create model and log directory
-    model_dir = os.path.join("Training", "Models", args.model, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-
-    log_dir = os.path.join(model_dir, "logs")
-    os.makedirs(log_dir, exist_ok=True)
-
-    # Create environment
-    env = setup_env(args.env, log_dir, args.carla_host, args.tm_port, args.config_file)
-
+def load_new_model(args: argparse.Namespace, log_dir: os.path, env: gym.Env):
     LEARNING_RATE = 1e-4
     BUFFER_SIZE = 100000
     LEARNING_STARTS = 1000
@@ -196,8 +192,57 @@ def main():
                     gradient_steps=GRADIENT_STEPS,
                     verbose=VERBOSE,
                     tensorboard_log=log_dir)
+
+    return model
+
+
+def load_current_model(model_dir: str, env: gym.Env):
+    # Load model
+    if "RecurrentPPO" in model_dir:
+        model = RecurrentPPO.load(model_dir, env=env)
+    elif "PPO" in model_dir:
+        model = PPO.load(model_dir, env=env)
+    elif "DDPG" in model_dir:
+        model = DDPG.load(model_dir, env=env)
+    elif "SAC" in model_dir:
+        model = SAC.load(model_dir, env=env)
+    elif "DQN" in model_dir:
+        model = DQN.load(model_dir, env=env)
+    else:
+        raise ValueError("Model not supported")
+    return model
+
+
+def main():
+    # Parse arguments
+    args = parse_arguments().parse_args()
+
+    if args.model_path:
+        assert os.path.exists(args.model_path), "The model path does not exist"
+        model_dir = os.path.dirname(args.model_path)
+        print("Loading model from", args.model_path)
+    else:
+        # Create model and log directory
+        model_dir = os.path.join("Training", "Models", args.model, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        print("TRAINING MODEL:", args.model)
+
+    log_dir = os.path.join(model_dir, "logs")
+    os.makedirs(log_dir, exist_ok=True)
+
+    print("------", args.env, "------")
+    print("------", args.timesteps, "------")
+
+    # Create environment
+    env = setup_env(args.env, log_dir, args.carla_host, args.tm_port, args.config_file)
+
+    # Load model
+    if args.model_path:
+        model = load_current_model(args.model_path, env)
+    else:
+        model = load_new_model(args, log_dir, env)
+
     # Train model
-    train(model, env, args.timesteps, model_dir, log_dir, verbose=VERBOSE)
+    train(model, args.timesteps, model_dir, log_dir, verbose=args.verbose)
 
 
 if __name__ == "__main__":
