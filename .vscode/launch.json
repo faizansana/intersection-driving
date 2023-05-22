@@ -49,13 +49,15 @@
                 "-e",
                 "custom_carla_gym",
                 "--carla-host",
-                "carla_server_debug-1",
+                "intersection-driving-carla_server_debug-1",
                 "--tm-port",
                 "9001",
                 "--config-file",
                 "./custom_carla_gym/config_continuous.yaml",
                 "-v",
-                "1"
+                "1",
+                "--model-path",
+                "Training/Models/DDPG/2023-05-22_20-43-16/best_model.zip"
             ],
             "cwd": "${workspaceFolder}/src"
         }
