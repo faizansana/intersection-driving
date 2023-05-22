@@ -1,6 +1,8 @@
 import argparse
 import datetime
 import os
+import pathlib
+import shutil
 import sys
 
 import gym
@@ -232,17 +234,26 @@ def main():
     print("------", args.env, "------")
     print("------", args.timesteps, "------")
 
-    # Create environment
-    env = setup_env(args.env, log_dir, args.carla_host, args.tm_port, args.config_file)
+    try:
+        # Create environment
+        env = setup_env(args.env, log_dir, args.carla_host, args.tm_port, args.config_file)
 
-    # Load model
-    if args.model_path:
-        model = load_current_model(args.model_path, env)
-    else:
-        model = load_new_model(args, log_dir, env)
+        # Load model
+        if args.model_path:
+            model = load_current_model(args.model_path, env)
+        else:
+            model = load_new_model(args, log_dir, env)
 
-    # Train model
-    train(model, args.timesteps, model_dir, log_dir, verbose=args.verbose)
+        # Train model
+        train(model, args.timesteps, model_dir, log_dir, verbose=args.verbose)
+    except Exception as e:
+        print(e)
+        # Delete model_dir if it was created and no .zip file is within that folder
+        model_path = pathlib.Path(model_dir)
+        zip_files = model_path.glob("*.zip")
+        if not args.model_path and not any(zip_files):
+            print("Deleting model directory:", model_path)
+            shutil.rmtree(model_path)
 
 
 if __name__ == "__main__":
