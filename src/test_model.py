@@ -91,6 +91,7 @@ def main():
             pygame.HWSURFACE | pygame.DOUBLEBUF)
 
     # Setup metrics
+    pedestrian_collision = 0
     crashed = 0
     episode_length = 0
     success = 0
@@ -125,6 +126,8 @@ def main():
 
             if info["collision"]:
                 crashed += 1
+                if info["pedestrian_collision"]:
+                    pedestrian_collision += 1
             if info["success"]:
                 success += 1
 
@@ -133,12 +136,15 @@ def main():
         if args.display:
             pygame.display.quit()
 
+    episode += 1
     print("Crashes:", crashed)
+    print("Pedestrian Collisions:", pedestrian_collision)
     print("Episodes:", episode)
-    print(f"Percentage of crashes: {round(crashed / episode, 2)}%")
-    print("Episode Mean Length:", episode_length / episode)
-    print(f"Success Rate: {round(success / episode, 2)}%")
-    print("Average Reward:", reward_sum/episode)
+    print(f"Percentage of crashes: {round(crashed / episode, 4) * 100}%")
+    print(f"Percentage of pedestrian collisions in total collisions: {round(pedestrian_collision / crashed, 2) * 100}%")
+    print("Episode Mean Length:", round(episode_length / episode, 2))
+    print(f"Success Rate: {round(success / episode, 4) * 100}%")
+    print("Average Reward:", round(reward_sum / episode, 4))
 
 
 if __name__ == "__main__":
