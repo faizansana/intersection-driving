@@ -12,7 +12,7 @@ from stable_baselines3 import DDPG, DQN, PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.monitor import Monitor
 
-from train_config import SaveOnBestTrainingRewardCallback
+from train_config import SaveOnBestTrainingRewardCallback, CustomCombinedExtractor
 
 
 def parse_arguments():
@@ -141,13 +141,18 @@ def load_new_model(args: argparse.Namespace, log_dir: os.path, env: gym.Env):
     TRAIN_FREQ = (1, "episode")
     GRADIENT_STEPS = -1
     VERBOSE = args.verbose
+    policy_kwargs = {
+        "features_extractor_class": CustomCombinedExtractor,
+        "net_arch": [400, 300]
+    }
+    policy = "MultiInputPolicy"
 
     # Setup Model
     if args.model == "DDPG":
-        model = DDPG("MlpPolicy",
+        model = DDPG(policy,
                      env,
                      learning_rate=LEARNING_RATE,
-                     policy_kwargs={"net_arch": [400, 300]},
+                     policy_kwargs=policy_kwargs,
                      buffer_size=BUFFER_SIZE,
                      learning_starts=LEARNING_STARTS,
                      gamma=GAMMA,
@@ -156,35 +161,36 @@ def load_new_model(args: argparse.Namespace, log_dir: os.path, env: gym.Env):
                      verbose=VERBOSE,
                      tensorboard_log=log_dir)
     elif args.model == "PPO":
-        model = PPO("MlpPolicy",
+        model = PPO(policy,
                     env,
                     learning_rate=LEARNING_RATE,
                     gamma=GAMMA,
-                    policy_kwargs={"net_arch": [400, 300]},
+                    policy_kwargs=policy_kwargs,
                     verbose=VERBOSE,
                     tensorboard_log=log_dir)
     elif args.model == "SAC":
-        model = SAC("MlpPolicy",
+        model = SAC(policy,
                     env,
                     learning_rate=LEARNING_RATE,
                     buffer_size=BUFFER_SIZE,
                     learning_starts=LEARNING_STARTS,
                     gamma=GAMMA,
-                    policy_kwargs={"net_arch": [400, 300]},
+                    policy_kwargs=policy_kwargs,
                     train_freq=TRAIN_FREQ,
                     gradient_steps=GRADIENT_STEPS,
                     verbose=VERBOSE,
                     tensorboard_log=log_dir)
     elif args.model == "RecurrentPPO":
-        model = RecurrentPPO("MlpLstmPolicy",
+        model = RecurrentPPO("MultiInputLstmPolicy",
                              env,
                              learning_rate=LEARNING_RATE,
                              gamma=GAMMA,
                              tensorboard_log=log_dir,
-                             verbose=VERBOSE
+                             verbose=VERBOSE,
+                             policy_kwargs=policy_kwargs
                              )
     elif args.model == "DQN":
-        model = DQN("MlpPolicy",
+        model = DQN(policy,
                     env,
                     learning_rate=LEARNING_RATE,
                     buffer_size=BUFFER_SIZE,
