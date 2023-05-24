@@ -27,8 +27,9 @@ def run_retraining(model_path: str, tm_port: int, server_name: str, config_file:
         with open(log_file, 'a') as output:
             subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logging.info(f"Model {model_path} crashed with error: {e}. Attempting to resume training...")
-        if e.returncode == signal.SIGSEGV or e.returncode == signal.SIGABRT:
+        logging.info(f"Run {model} failed with error: {e}.")
+        if abs(e.returncode) == signal.Signals.SIGSEGV or abs(e.returncode) == signal.Signals.SIGABRT:
+            logging.info(f"Attempting to resume training for {model}...")
             run_retraining(model_path, tm_port, server_name, config_file, log_file)
         logging.info(f"Failed to resume training for {model_path} with error: {e}")
 
@@ -41,10 +42,14 @@ def run_training(model: str, tm_port: int, server_name: str, config_file: str = 
         with open(log_file, 'w') as output:
             subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logging.info(f"Run {model} failed with error: {e}. Attempting to resume training...")
-        if e.returncode == signal.SIGSEGV or e.returncode == signal.SIGABRT:
+        logging.info(f"Run {model} failed with error: {e}.")
+        if abs(e.returncode) == signal.Signals.SIGSEGV or abs(e.returncode) == signal.Signals.SIGABRT:
+            logging.info(f"Attempting to resume training for {model}...")
             model_path = get_saved_model_location(log_file)
-            run_retraining(model_path, tm_port, server_name, config_file, log_file)
+            if model_path == "":
+                run_training(model, tm_port, server_name, config_file)
+            else:
+                run_retraining(model_path, tm_port, server_name, config_file, log_file)
         logging.info(f"Failed to resume training for {model} in RUN_TRAINING with error: {e}")
 
 
