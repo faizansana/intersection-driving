@@ -72,6 +72,12 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
         if self.save_path is not None:
             os.makedirs(self.save_path, exist_ok=True)
 
+    def _on_training_start(self) -> None:
+        x, y = ts2xy(load_results(self.log_dir), 'timesteps')
+        if len(x) > 0:
+            # Mean training reward over the last 100 episodes
+            self.best_mean_reward = np.mean(y[-100:])
+
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
             if self.verbose > 0:
