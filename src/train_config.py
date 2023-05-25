@@ -101,3 +101,40 @@ class SaveOnBestTrainingRewardCallback(BaseCallback):
                         print(f"Saving new best model to {save_path}")
                     self.model.save(save_path)
         return True
+
+
+class SaveLatestModelCallback(BaseCallback):
+    """
+    Callback for saving a model (the check is done every ``check_freq`` steps)
+    based on the training reward (in practice, we recommend using ``EvalCallback``).
+
+    :param check_freq:
+    :param log_dir: Path to the folder where the model will be saved.
+      It must contains the file created by the ``Monitor`` wrapper.
+    :param verbose: Verbosity level.
+    """
+
+    def __init__(self, check_freq: int, save_path: str, verbose: int = 1):
+        super(SaveLatestModelCallback, self).__init__(verbose)
+        self.check_freq = check_freq
+        self.save_path = save_path
+        self.previous_episode_num = 0
+
+    def _init_callback(self) -> None:
+        # Create folder if needed
+        if self.save_path is not None:
+            os.makedirs(self.save_path, exist_ok=True)
+
+    def _on_training_start(self) -> None:
+        self.previous_episode_num = self.model._episode_num
+
+    def _on_step(self) -> bool:
+        if self.n_calls % self.check_freq == 0:
+            if self.model._episode_num > self.previous_episode_num:
+                self.previous_episode_num = self.model._episode_num
+                save_path = os.path.join(self.save_path, "latest_model")
+                # Example for saving best model
+                if self.verbose > 0:
+                    print(f"Saving latest model to {save_path}")
+                self.model.save(save_path)
+        return True
