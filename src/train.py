@@ -12,7 +12,7 @@ from stable_baselines3 import DDPG, DQN, PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.monitor import Monitor
 
-from train_config import SaveOnBestTrainingRewardCallback, CustomCombinedExtractor
+from train_config import SaveOnBestTrainingRewardCallback, CustomCombinedExtractor, SaveLatestModelCallback
 
 
 def parse_arguments():
@@ -72,9 +72,10 @@ def parse_arguments():
 def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 2000, verbose: int = 0) -> None:
     """Train an agent on a given environment for a given number of timesteps"""
     # Create callback
-    callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
+    best_model_callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
+    latest_model_callback = SaveLatestModelCallback(check_freq=10, save_path=model_dir, verbose=verbose)
     # Train
-    model.learn(total_timesteps=timesteps, callback=callback, progress_bar=True, reset_num_timesteps=False)
+    model.learn(total_timesteps=timesteps, callback=[best_model_callback, latest_model_callback], progress_bar=True, reset_num_timesteps=False)
     # Save final model
     model.save(os.path.join(model_dir, "final_model"))
 

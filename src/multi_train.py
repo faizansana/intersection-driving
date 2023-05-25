@@ -14,8 +14,8 @@ base_tm_port = 8000
 def get_saved_model_location(log_file: str) -> str:
     with open(log_file, 'r') as f:
         for line in f:
-            if "Saving new best model to " in line:
-                return line.split("Saving new best model to ")[1].strip() + ".zip"
+            if "Saving latest model to " in line:
+                return line.split("Saving latest model to ")[1].strip() + ".zip"
     return ""
 
 
