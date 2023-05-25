@@ -69,7 +69,7 @@ def parse_arguments():
     return argparser
 
 
-def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 20, verbose: int = 0) -> None:
+def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 2000, verbose: int = 0) -> None:
     """Train an agent on a given environment for a given number of timesteps"""
     # Create callback
     callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
