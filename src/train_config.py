@@ -130,11 +130,11 @@ class SaveLatestModelCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.check_freq == 0:
-            if self.model._episode_num > self.previous_episode_num:
-                self.previous_episode_num = self.model._episode_num
-                save_path = os.path.join(self.save_path, "latest_model")
-                # Example for saving best model
-                if self.verbose > 0:
-                    print(f"Saving latest model to {save_path}")
-                self.model.save(save_path)
+            # if self.model._episode_num > self.previous_episode_num:
+            self.previous_episode_num = self.model._episode_num
+            save_path = os.path.join(self.save_path, "latest_model")
+            # Example for saving best model
+            if self.verbose > 0:
+                print(f"Saving latest model to {save_path}")
+            self.model.save(save_path)
         return True

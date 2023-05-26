@@ -73,7 +73,7 @@ def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.
     """Train an agent on a given environment for a given number of timesteps"""
     # Create callback
     best_model_callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
-    latest_model_callback = SaveLatestModelCallback(check_freq=10, save_path=model_dir, verbose=verbose)
+    latest_model_callback = SaveLatestModelCallback(check_freq=10000, save_path=model_dir, verbose=verbose)
     # Train
     model.learn(total_timesteps=timesteps, callback=[best_model_callback, latest_model_callback], progress_bar=True, reset_num_timesteps=False)
     # Save final model
