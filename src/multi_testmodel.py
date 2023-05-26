@@ -22,7 +22,7 @@ def run_test(model_path: str, tm_port: int, server_name: str, config_file: str =
     directory = os.path.dirname(model_path)
     log_file = os.path.join(directory, "test_model.log")
 
-    command = ["python", "test_model.py", model_path, "-c", server_name, "--tm-port", str(tm_port), "-v", "1", "--config-file", config_file]
+    command = ["python", "test_model.py", model_path, "-c", server_name, "--tm-port", str(tm_port), "-v", "1", "--config-file", config_file, "--episodes", str(1000)]
 
     try:
         with open(log_file, 'w') as output:
