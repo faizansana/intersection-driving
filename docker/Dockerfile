@@ -1,4 +1,9 @@
-FROM nvidia/cuda:11.8.0-base-ubuntu20.04 AS base
+ARG CARLA_VERSION=0.9.13
+ARG CUDA_VERSION=11.8.0
+FROM carlasim/carla:${CARLA_VERSION} AS carla
+
+ARG CUDA_VERSION=11.8.0
+FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu20.04 AS base
 SHELL [ "/bin/bash", "-c" ]
 
 ARG CARLA_VERSION=0.9.13
@@ -48,10 +53,17 @@ RUN conda update conda && \
     conda env create -n driving -f /tmp/environment.yml && \
     conda clean -a -y
 
+COPY --from=carla /home/carla/PythonAPI /opt/carla/PythonAPI
+
 USER docker:docker
-RUN conda init && \
-    echo "conda activate driving" >> ~/.bashrc
 ENV SHELL=/bin/bash
+ENV CARLA_VERSION ${CARLA_VERSION:?}
+RUN conda init bash && \
+    echo "conda activate driving" >> ~/.bashrc
+# Install carla python api if carla v0.9.12 or greater
+RUN if [[ "$CARLA_VERSION" > "0.9.11" ]]; then \
+    ${CONDA_DIR}/envs/driving/bin/python -m pip install "carla==$CARLA_VERSION"; \
+    fi
 ENV DISPLAY=:1.0
 WORKDIR /home/docker
 ENTRYPOINT ["fixuid"]

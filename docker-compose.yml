@@ -2,17 +2,14 @@ version: "3.8"
 services:
   main_container:
     build:
-      context: .
+      context: ./docker
       args:
-        - CARLA_VERSION=${CARLA_VERSION}
+        - CARLA_VERSION=${CARLA_VERSION:?}
+        - CUDA_VERSION=${CUDA_VERSION:?}
       cache_from:
-        - faizansana/intersection-driving:latest
-    image: faizansana/intersection-driving:latest
-    # ports:
-    #   - "${GUI_TOOLS_VNC_PORT}:5900"
-    environment:
-      - VNC_PORT=${GUI_TOOLS_VNC_PORT}
-    user: ${FIXUID}:${FIXGID}
+        - faizansana/intersection-driving:cuda-${CUDA_VERSION:?}-carla-${CARLA_VERSION:?}
+    image: faizansana/intersection-driving:cuda-${CUDA_VERSION:?}-carla-${CARLA_VERSION:?}
+    user: ${FIXUID:?}:${FIXGID:?}
     volumes:
       - ./:/home/docker/src
     depends_on:
@@ -21,7 +18,7 @@ services:
 
   carla_server:
     image: "carlasim/carla:${CARLA_VERSION}"
-    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=Low -nosound -carla-server -fps=30"
+    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=${CARLA_QUALITY} -nosound -carla-server -fps=30"
     restart: always
     deploy:
       replicas: 5
