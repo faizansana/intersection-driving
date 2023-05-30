@@ -11,6 +11,12 @@ jobs:
   build-and-publish:
     runs-on: ubuntu-latest
     steps:
+      - name: Reclaim disk space as specified at https://github.com/actions/runner-images/issues/2840
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
       - name: Checkout repo
         uses: actions/checkout@v3
         
