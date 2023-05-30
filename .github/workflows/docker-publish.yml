@@ -6,6 +6,7 @@ on:
       - "main"
     paths:
       - "docker/**"
+      - ".github/workflows/docker-publish.yml"
 
 jobs:
   build-and-publish:
