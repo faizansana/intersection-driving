@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import torch
-from gym import spaces
+from gymnasium import spaces
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.results_plotter import load_results, ts2xy
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
