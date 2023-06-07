@@ -10,6 +10,10 @@ on:
 
 jobs:
   build-and-publish:
+    strategy:
+      matrix:
+        cuda: ["11.4.0", "11.8.0"]
+        carla: ["0.9.10.1", "0.9.13"]
     runs-on: ubuntu-latest
     steps:
       - name: Reclaim disk space as specified at https://github.com/actions/runner-images/issues/2840
@@ -34,5 +38,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./docker
+          build-args: |
+            CUDA_VERSION=${{ matrix.cuda }}
+            CARLA_VERSION=${{ matrix.carla }}
           push: true
-          tags: faizansana/intersection-driving:latest
+          tags: faizansana/intersection-driving:cuda-${{ matrix.cuda }}-carla-${{ matrix.carla }}
