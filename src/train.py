@@ -83,14 +83,14 @@ def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.
 def setup_env(env_name: str, log_dir: str, carla_host: str, tm_port: int = 8000, config_file: str = "./custom_carla_gym/config.yaml") -> gym.Env:
     """Setup environment"""
     if env_name == "custom_carla_gym":
-        sys.path.append("./custom_carla_gym")
-        from custom_carla_gym.carla_env_custom import CarlaEnv
+        sys.path.append("./custom_carla_gym/src")
+        from custom_carla_gym.src.carla_env_custom import CarlaEnv
         cfg = yaml.safe_load(open(config_file))
         env = CarlaEnv(cfg=cfg, host=carla_host, tm_port=tm_port)
 
     elif env_name == "gym_carla":
         sys.path.append("./gym_carla")
-        from gym_carla.gym_carla.envs.carla_env import CarlaEnv
+        from gym_carla.envs.carla_env import CarlaEnv
         params = {
             "number_of_vehicles": 40,
             "number_of_walkers": 10,

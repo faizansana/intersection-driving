@@ -59,7 +59,8 @@ USER docker:docker
 ENV SHELL=/bin/bash
 ENV CARLA_VERSION ${CARLA_VERSION:?}
 RUN conda init bash && \
-    echo "conda activate driving" >> ~/.bashrc
+    echo "conda activate driving" >> ~/.bashrc && \
+    echo "export PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-0.9.10-py3.7-linux-x86_64.egg" >> ~/.bashrc
 # Install carla python api if carla v0.9.12 or greater
 RUN if [[ "$CARLA_VERSION" > "0.9.11" ]]; then \
     ${CONDA_DIR}/envs/driving/bin/python -m pip install "carla==$CARLA_VERSION"; \
