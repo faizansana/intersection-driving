@@ -59,9 +59,9 @@ for i in range(total_runs):
     model = models[i]
     tm_port = base_tm_port + i
     if model == "DQN" or model == "PPO" or model == "RecurrentPPO":
-        config_file = "./custom_carla_gym/config_discrete.yaml"
+        config_file = "./custom_carla_gym/src/config_discrete.yaml"
     else:
-        config_file = "./custom_carla_gym/config_continuous.yaml"
+        config_file = "./custom_carla_gym/src/config_continuous.yaml"
 
     process = Process(target=run_training, args=(model, tm_port, f"{base_server_name}-{i+1}", config_file))
     processes.append(process)
