@@ -26,7 +26,7 @@ services:
         reservations:
           devices:
           - driver: nvidia
-            device_ids: ['2']
+            device_ids: ['${GPU_ID_CARLA_MAIN:?}']
             capabilities: [gpu]
 
   carla_server_debug:
@@ -39,5 +39,5 @@ services:
         reservations:
           devices:
           - driver: nvidia
-            device_ids: ['5']
+            device_ids: ['${GPU_ID_CARLA_DEBUG:?}']
             capabilities: [gpu]
