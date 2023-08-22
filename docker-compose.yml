@@ -21,7 +21,7 @@ services:
     command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=${CARLA_QUALITY} -nosound -carla-server -fps=30"
     restart: always
     deploy:
-      replicas: 5
+      replicas: ${CARLA_SERVER_REPLICAS:?}
       resources:
         reservations:
           devices:
@@ -34,7 +34,7 @@ services:
     command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=Epic -nosound -carla-server -fps=30"
     restart: always
     deploy:
-      replicas: 2
+      replicas: ${CARLA_DEBUG_SERVER_REPLICAS:?}
       resources:
         reservations:
           devices:
