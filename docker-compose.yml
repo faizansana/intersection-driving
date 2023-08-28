@@ -10,6 +10,7 @@ services:
         - faizansana/intersection-driving:cuda-${CUDA_VERSION:?}-carla-${CARLA_VERSION:?}
     image: faizansana/intersection-driving:cuda-${CUDA_VERSION:?}-carla-${CARLA_VERSION:?}
     user: ${FIXUID:?}:${FIXGID:?}
+    runtime: nvidia
     volumes:
       - ./:/home/docker/src
     depends_on:
