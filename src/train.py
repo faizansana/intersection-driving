@@ -74,6 +74,12 @@ def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.
     # Create callback
     best_model_callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
     latest_model_callback = SaveLatestModelCallback(check_freq=10000, save_path=model_dir, verbose=verbose)
+    # Check if retraining
+    if model.num_timesteps > 0:
+        timesteps = timesteps - model.num_timesteps
+        # If timesteps is negative, do not retrain
+        if timesteps < 0:
+            return
     # Train
     model.learn(total_timesteps=timesteps, callback=[best_model_callback, latest_model_callback], progress_bar=True, reset_num_timesteps=False)
     # Save final model
