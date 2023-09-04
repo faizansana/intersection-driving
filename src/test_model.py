@@ -101,7 +101,7 @@ def main():
     try:
 
         for episode in tqdm(range(args.episodes)):
-            obs = env.reset()
+            obs, info = env.reset()
             done = False
 
             # cell and hidden state of the LSTM
@@ -111,7 +111,7 @@ def main():
 
             while not done:
                 action, lstm_states = model.predict(obs, state=lstm_states, episode_start=episode_starts, deterministic=True)
-                obs, reward, done, info = env.step(action)
+                obs, reward, done, _, info = env.step(action)
                 episode_starts = done
 
                 episode_length += 1
