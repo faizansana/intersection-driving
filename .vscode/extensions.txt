@@ -1,5 +1,0 @@
-eamodio.gitlens
-ms-python.python
-ms-python.isort
-njpwerner.autodocstring
-VisualStudioExptTeam.vscodeintellicode
