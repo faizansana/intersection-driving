@@ -27,6 +27,8 @@ CARLA_QUALITY=${CARLA_QUALITY:-"Low"}
 GPU_ID_CARLA_MAIN=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | sort -n -k2 | awk -F', ' '{print $1}' | head -n 1)
 # Find GPU with second lowest memory usage
 GPU_ID_CARLA_DEBUG=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | sort -n -k2 | awk -F', ' '{print $1}' | head -n 2 | tail -n 1)
+# Find GPU with third lowest memory usage
+GPU_ID_MAIN_CONTAINER=$(nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | sort -n -k2 | awk -F', ' '{print $1}' | head -n 3 | tail -n 1)
 
 
 ## -------------------- CARLA Number of Replicas ------------------
@@ -47,6 +49,7 @@ echo "CARLA_QUALITY=$CARLA_QUALITY" >> "$SCRIPT_DIR/.env"
 
 echo "GPU_ID_CARLA_MAIN=$GPU_ID_CARLA_MAIN" >> "$SCRIPT_DIR/.env"
 echo "GPU_ID_CARLA_DEBUG=$GPU_ID_CARLA_DEBUG" >> "$SCRIPT_DIR/.env"
+echo "GPU_ID_MAIN_CONTAINER=$GPU_ID_MAIN_CONTAINER" >> "$SCRIPT_DIR/.env"
 
 echo "CARLA_SERVER_REPLICAS=$CARLA_SERVER_REPLICAS" >> "$SCRIPT_DIR/.env"
 echo "CARLA_DEBUG_SERVER_REPLICAS=$CARLA_DEBUG_SERVER_REPLICAS" >> "$SCRIPT_DIR/.env"

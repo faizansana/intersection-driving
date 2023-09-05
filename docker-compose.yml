@@ -13,6 +13,13 @@ services:
     runtime: nvidia
     volumes:
       - ./:/home/docker/src
+    deploy:
+      resources:
+          reservations:
+            devices:
+            - driver: nvidia
+              device_ids: ['${GPU_ID_MAIN_CONTAINER:?}']
+              capabilities: [gpu]
     depends_on:
       - carla_server
       - carla_server_debug
