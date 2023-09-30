@@ -10,7 +10,7 @@ ARG CARLA_VERSION=0.9.13
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV CARLA_VERSION $CARLA_VERSION
-RUN apt-get update && apt-get install -y sudo curl wget git python3-venv
+RUN apt-get update && apt-get install -y sudo curl wget git python3-venv iputils-ping
 
 # Add a docker user so we that created files in the docker container are owned by a non-root user
 RUN addgroup --gid 1000 docker && \
@@ -37,33 +37,29 @@ COPY --chown=docker ./supervisord.conf /etc/supervisor/supervisord.conf
 RUN chown -R docker:docker /etc/supervisor
 RUN chmod 777 /var/log/supervisor/
 
-
-# Install miniconda
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-     /bin/bash ~/miniconda.sh -b -p /opt/conda && \
-     rm ~/miniconda.sh && \
-     echo "export PATH=/opt/conda/bin:$PATH" >> ~/.bashrc
-# Putting conda in path to use 'conda activate'
-ENV PATH=$CONDA_DIR/bin:$PATH
-
-
-COPY ./environment.yml /tmp
-RUN conda update conda && \
-    conda env create -n driving -f /tmp/environment.yml && \
-    conda clean -a -y
-
 COPY --from=carla /home/carla/PythonAPI /opt/carla/PythonAPI
 
+# Install miniconda
 USER docker:docker
 ENV SHELL=/bin/bash
 ENV CARLA_VERSION ${CARLA_VERSION:?}
-RUN conda init bash && \
-    echo "conda activate driving" >> ~/.bashrc && \
-    echo "export PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-0.9.10-py3.7-linux-x86_64.egg" >> ~/.bashrc
-# Install carla python api if carla v0.9.12 or greater
+ENV PYTHON_VENV_NAME driving
+
+COPY --chown=docker:docker ./requirements.txt /tmp
+WORKDIR /home/docker
+RUN python3 -m venv $PYTHON_VENV_NAME && \
+    source $PYTHON_VENV_NAME/bin/activate && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt && \
+    echo "source /home/docker/$PYTHON_VENV_NAME/bin/activate" >> ~/.bashrc
+
+# Install carla python api if carla v0.9.12 or greater, otherwise add the egg to the python path
 RUN if [[ "$CARLA_VERSION" > "0.9.11" ]]; then \
-    ${CONDA_DIR}/envs/driving/bin/python -m pip install "carla==$CARLA_VERSION"; \
+    source $PYTHON_VENV_NAME/bin/activate && \
+    python -m pip install "carla==$CARLA_VERSION"; \
+    else \
+    CARLA_VERSION=$(echo $CARLA_VERSION | sed 's/\.[^.]*$//') && \
+    echo "export PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-${CARLA_VERSION}-py3.7-linux-x86_64.egg" >> ~/.bashrc; \
     fi
 ENV DISPLAY=:1.0
 WORKDIR /home/docker
