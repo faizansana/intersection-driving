@@ -245,7 +245,7 @@ def main():
     os.makedirs(log_dir, exist_ok=True)
 
     print("------", args.env, "------")
-    print("------", args.timesteps, "------")
+    print(f"------ {args.timesteps:,} ------")
 
     try:
         # Create environment
