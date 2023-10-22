@@ -38,9 +38,9 @@ try:
         model_path = model_paths[i]
         tm_port = base_tm_port + i
         if "DQN" in model_path or "PPO" in model_path:
-            config_file = "./custom_carla_gym/config_discrete.yaml"
+            config_file = "./custom_carla_gym/src/config_discrete.yaml"
         else:
-            config_file = "./custom_carla_gym/config_continuous.yaml"
+            config_file = "./custom_carla_gym/src/config_continuous.yaml"
 
         process = Process(target=run_test, args=(model_path, tm_port, f"{base_server_name}-{i+1}", config_file))
         processes.append(process)
