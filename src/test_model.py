@@ -36,6 +36,12 @@ def parse_arguments():
         metavar="IP",
         type=str)
     argparser.add_argument(
+        "-p", "--carla-port",
+        help="Port of CARLA host",
+        default="2000",
+        metavar="PORT",
+        type=int)
+    argparser.add_argument(
         "--episodes",
         help="Number of episodes to test for",
         default=100,
@@ -67,7 +73,7 @@ def main():
     args = parse_arguments().parse_args()
 
     # Setup environment
-    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, tm_port=args.tm_port, config_file=args.config_file)
+    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, tm_port=args.tm_port, config_file=args.config_file)
 
     # Load model
     if "RecurrentPPO" in args.modelpath:
