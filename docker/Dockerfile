@@ -1,8 +1,8 @@
 ARG CARLA_VERSION=0.9.13
-ARG CUDA_VERSION=11.8.0
+ARG CUDA_VERSION=12.0.0
 FROM carlasim/carla:${CARLA_VERSION} AS carla
 
-ARG CUDA_VERSION=11.8.0
+ARG CUDA_VERSION=12.0.0
 FROM nvidia/cuda:${CUDA_VERSION}-base-ubuntu22.04 AS base
 SHELL [ "/bin/bash", "-c" ]
 
@@ -10,7 +10,14 @@ ARG CARLA_VERSION=0.9.13
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV CARLA_VERSION $CARLA_VERSION
-RUN apt-get update && apt-get install -y sudo curl wget git python3-venv iputils-ping
+RUN apt-get update && \
+    apt-get install software-properties-common -y && \
+    # Needed for installing python3.8 in ubuntu 22.04
+    add-apt-repository ppa:deadsnakes/ppa -y && \
+    apt-get update && \
+    apt-get install -y sudo curl wget git python3.8 python3.8-venv iputils-ping && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Add a docker user so we that created files in the docker container are owned by a non-root user
 RUN addgroup --gid 1000 docker && \
@@ -47,7 +54,7 @@ ENV PYTHON_VENV_NAME driving
 
 COPY --chown=docker:docker ./requirements.txt /tmp
 WORKDIR /home/docker
-RUN python3 -m venv $PYTHON_VENV_NAME && \
+RUN python3.8 -m venv $PYTHON_VENV_NAME && \
     source $PYTHON_VENV_NAME/bin/activate && \
     pip install --upgrade pip && \
     pip install --no-cache-dir -r /tmp/requirements.txt && \
