@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        cuda: ["11.4.3", "11.8.0"]
+        cuda: ["11.8.0", "12.0.0"]
         carla: ["0.9.10.1", "0.9.13"]
     runs-on: ubuntu-latest
     steps:
