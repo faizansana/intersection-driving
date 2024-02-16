@@ -54,15 +54,9 @@ def parse_arguments():
         metavar="PORT",
         type=int)
     argparser.add_argument(
-        "--tm-port",
-        help="Port of Traffic Manager server",
-        default=8000,
-        metavar="PORT",
-        type=int)
-    argparser.add_argument(
         "--config-file",
         help="Path to config file",
-        default="./custom_carla_gym/config.yaml",
+        default="./custom_carla_gym/src/config.yaml",
         metavar="PATH",
         type=str)
     argparser.add_argument(
@@ -92,13 +86,13 @@ def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.
     model.save(os.path.join(model_dir, "final_model"))
 
 
-def setup_env(env_name: str, log_dir: str, carla_host: str, carla_port: int, tm_port: int = 8000, config_file: str = "./custom_carla_gym/config.yaml") -> gym.Env:
+def setup_env(env_name: str, log_dir: str, carla_host: str, carla_port: int, config_file: str = "./custom_carla_gym/config.yaml") -> gym.Env:
     """Setup environment"""
     if env_name == "custom_carla_gym":
         sys.path.append("./custom_carla_gym/src")
         from custom_carla_gym.src.carla_env_custom import CarlaEnv
         cfg = yaml.safe_load(open(config_file))
-        env = CarlaEnv(cfg=cfg, host=carla_host, port=carla_port, tm_port=tm_port)
+        env = CarlaEnv(cfg=cfg, host=carla_host, port=carla_port)
 
     elif env_name == "gym_carla":
         sys.path.append("./gym_carla")
@@ -255,7 +249,7 @@ def main():
 
     try:
         # Create environment
-        env = setup_env(args.env, log_dir, args.carla_host, args.carla_port, args.tm_port, args.config_file)
+        env = setup_env(args.env, log_dir, args.carla_host, args.carla_port, args.config_file)
 
         # Load model
         if args.model_path:

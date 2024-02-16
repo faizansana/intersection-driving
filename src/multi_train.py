@@ -23,12 +23,6 @@ def parse_arguments():
         metavar="SERVER_NAME",
         type=str)
     argparser.add_argument(
-        "--base-tm-port",
-        help="Port of base Traffic Manager server",
-        default=8000,
-        metavar="PORT",
-        type=int)
-    argparser.add_argument(
         "-t", "--timesteps",
         help="Number of timesteps to train for",
         default=1500000,
@@ -46,9 +40,9 @@ def get_saved_model_location(log_file: str) -> str:
     return ""
 
 
-def run_retraining(model_path: str, tm_port: int, server_name: str, config_file: str, log_file: str, timesteps: int = 1500000):
+def run_retraining(model_path: str, server_name: str, config_file: str, log_file: str, timesteps: int = 1500000):
 
-    command = ["python", "train.py", "--model-path", model_path, "-t", str(timesteps), "-c", server_name, "--tm-port", str(tm_port), "-v", "1", "--config-file", config_file]
+    command = ["python", "train.py", "--model-path", model_path, "-t", str(timesteps), "-c", server_name, "-v", "1", "--config-file", config_file]
 
     try:
         with open(log_file, 'a') as output:
@@ -57,13 +51,13 @@ def run_retraining(model_path: str, tm_port: int, server_name: str, config_file:
         logging.info(f"Run {model_path} failed with error: {e}.")
         if abs(e.returncode) == signal.Signals.SIGSEGV or abs(e.returncode) == signal.Signals.SIGABRT:
             logging.info(f"Attempting to resume training for {model_path}...")
-            run_retraining(model_path, tm_port, server_name, config_file, log_file, timesteps)
+            run_retraining(model_path, server_name, config_file, log_file, timesteps)
         logging.info(f"Failed to resume training for {model_path} with error: {e}")
 
 
-def run_training(model: str, tm_port: int, server_name: str, timesteps: int, config_file: str = "./custom_carla_gym/config.yaml"):
+def run_training(model: str, server_name: str, timesteps: int, config_file: str = "./custom_carla_gym/config.yaml"):
     log_file = f"train_{model}.log"
-    command = ["python", "train.py", "-m", model, "-t", str(timesteps), "-c", server_name, "--tm-port", str(tm_port), "-v", "1", "--config-file", config_file]
+    command = ["python", "train.py", "-m", model, "-t", str(timesteps), "-c", server_name, "-v", "1", "--config-file", config_file]
 
     try:
         with open(log_file, 'w') as output:
@@ -74,9 +68,9 @@ def run_training(model: str, tm_port: int, server_name: str, timesteps: int, con
             logging.info(f"Attempting to resume training for {model}...")
             model_path = get_saved_model_location(log_file)
             if model_path == "":
-                run_training(model, tm_port, server_name, timesteps, config_file)
+                run_training(model, server_name, timesteps, config_file)
             else:
-                run_retraining(model_path, tm_port, server_name, config_file, log_file, timesteps)
+                run_retraining(model_path, server_name, config_file, log_file, timesteps)
         logging.info(f"Failed to resume training for {model} in RUN_TRAINING with error: {e}")
 
 
@@ -89,13 +83,12 @@ def main():
 
     for i in range(total_runs):
         model = models[i]
-        tm_port = args.base_tm_port + i
         if model == "DQN" or model == "PPO" or model == "RecurrentPPO":
             config_file = "./custom_carla_gym/src/config_discrete.yaml"
         else:
             config_file = "./custom_carla_gym/src/config_continuous.yaml"
 
-        process = Process(target=run_training, args=(model, tm_port, f"{args.base_carla_host}-{i+1}", args.timesteps, config_file))
+        process = Process(target=run_training, args=(model, f"{args.base_carla_host}-{i+1}", args.timesteps, config_file))
         processes.append(process)
         process.start()
 
