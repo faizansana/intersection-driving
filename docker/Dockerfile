@@ -15,7 +15,7 @@ RUN apt-get update && \
     # Needed for installing python3.8 in ubuntu 22.04
     add-apt-repository ppa:deadsnakes/ppa -y && \
     apt-get update && \
-    apt-get install -y sudo curl wget git python3.8 python3.8-venv iputils-ping && \
+    apt-get install -y sudo curl wget git python3.8 python3.8-venv iputils-ping tmux && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -69,6 +69,8 @@ RUN if [[ "$CARLA_VERSION" > "0.9.11" ]]; then \
     echo "export PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla/dist/carla-${CARLA_VERSION}-py3.7-linux-x86_64.egg" >> ~/.bashrc; \
     fi
 ENV DISPLAY=:1.0
+# Prevent Python from buffering stdout and stderr
+ENV PYTHONBUFFERED=1
 WORKDIR /home/docker
 ENTRYPOINT ["fixuid"]
 CMD ["/usr/bin/supervisord"]
