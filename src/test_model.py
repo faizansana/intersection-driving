@@ -53,15 +53,9 @@ def parse_arguments():
         action="store_true"
     )
     argparser.add_argument(
-        "--tm-port",
-        help="Port of Traffic Manager server",
-        default=8000,
-        metavar="PORT",
-        type=int)
-    argparser.add_argument(
         "--config-file",
         help="Path to config file",
-        default="./custom_carla_gym/config_continuous.yaml",
+        default="./custom_carla_gym/src/config_continuous.yaml",
         metavar="PATH",
         type=str)
 
@@ -73,7 +67,7 @@ def main():
     args = parse_arguments().parse_args()
 
     # Setup environment
-    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, tm_port=args.tm_port, config_file=args.config_file)
+    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, config_file=args.config_file)
 
     # Load model
     if "RecurrentPPO" in args.modelpath:

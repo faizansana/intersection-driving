@@ -18,11 +18,11 @@ base_server_name = "intersection-driving-carla_server"
 base_tm_port = 10000
 
 
-def run_test(model_path: str, tm_port: int, server_name: str, config_file: str = "./custom_carla_gym/config.yaml"):
+def run_test(model_path: str, server_name: str, config_file: str = "./custom_carla_gym/config.yaml"):
     directory = os.path.dirname(model_path)
     log_file = os.path.join(directory, "test_model.log")
 
-    command = ["python", "test_model.py", model_path, "-c", server_name, "--tm-port", str(tm_port), "-v", "1", "--config-file", config_file, "--episodes", str(1000)]
+    command = ["python", "test_model.py", model_path, "-c", server_name, "-v", "1", "--config-file", config_file, "--episodes", str(1000)]
 
     try:
         with open(log_file, 'w') as output:
@@ -36,13 +36,12 @@ processes = []
 try:
     for i in range(total_runs):
         model_path = model_paths[i]
-        tm_port = base_tm_port + i
         if "DQN" in model_path or "PPO" in model_path:
             config_file = "./custom_carla_gym/src/config_discrete.yaml"
         else:
             config_file = "./custom_carla_gym/src/config_continuous.yaml"
 
-        process = Process(target=run_test, args=(model_path, tm_port, f"{base_server_name}-{i+1}", config_file))
+        process = Process(target=run_test, args=(model_path, f"{base_server_name}-{i+1}", config_file))
         processes.append(process)
         process.start()
 
