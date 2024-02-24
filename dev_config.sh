@@ -37,7 +37,7 @@ CARLA_DEBUG_SERVER_REPLICAS=${CARLA_DEBUG_SERVER_REPLICAS:-"1"}
 
 
 ## -------------------------- CUDA Version ------------------------
-CUDA_VERSION=${CUDA_VERSION:-"11.8.0"}
+CUDA_VERSION=${CUDA_VERSION:-"12.0.0"}
 
 
 ## -------------------------- Write to .env -----------------------
