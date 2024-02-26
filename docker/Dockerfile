@@ -80,6 +80,8 @@ RUN wget -O PlotJuggler-3.5.0.AppImage https://github.com/facontidavide/PlotJugg
     chmod +x PlotJuggler-3.5.0.AppImage && \
     ./PlotJuggler-3.5.0.AppImage --appimage-extract
 
+# Add CARLA PythonAPI to the python path
+RUN echo "export PYTHONPATH=$PYTHONPATH:/opt/carla/PythonAPI/carla" >> ~/.bashrc
 ENV DISPLAY=:1.0
 # Prevent Python from buffering stdout and stderr
 ENV PYTHONBUFFERED=1
