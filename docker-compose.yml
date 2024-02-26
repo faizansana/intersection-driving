@@ -26,7 +26,7 @@ services:
 
   carla_server:
     image: "carlasim/carla:${CARLA_VERSION}"
-    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -RenderOffScreen -world-port=2000 -quality-level=${CARLA_QUALITY} -nosound -carla-server -fps=30"
+    command: /bin/bash -c "SDL_VIDEODRIVER=offscreen && ./CarlaUE4.sh -nullrhi"
     restart: always
     deploy:
       replicas: ${CARLA_SERVER_REPLICAS:?}
