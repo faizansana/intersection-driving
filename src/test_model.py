@@ -141,7 +141,10 @@ def main():
     print("Pedestrian Collisions:", pedestrian_collision)
     print("Episodes:", episode)
     print(f"Percentage of crashes: {round(crashed / episode, 4) * 100}%")
-    print(f"Percentage of pedestrian collisions in total collisions: {round(pedestrian_collision / crashed, 2) * 100}%")
+    if crashed != 0:
+        print(f"Percentage of pedestrian collisions in total collisions: {round(pedestrian_collision / crashed, 2) * 100}%")
+    else:
+        print("Percentage of pedestrian collisions in total collisions: 0%")
     print("Episode Mean Length:", round(episode_length / episode, 2))
     print(f"Success Rate: {round(success / episode, 4) * 100}%")
     print("Average Reward:", round(reward_sum / episode, 4))
