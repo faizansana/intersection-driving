@@ -12,7 +12,7 @@ from train import setup_env
 def parse_arguments():
     argparser = argparse.ArgumentParser(description="Test Agent")
     argparser.add_argument(
-        "-p", "--model-path",
+        "-m", "--model-path",
         help="Path to model to test",
         metavar="PATH",
         type=str)
@@ -59,7 +59,7 @@ def parse_arguments():
         metavar="PATH",
         type=str)
     argparser.add_argument(
-        "--r", "--random-model",
+        "-r", "--random-model",
         help="Whether to test a random model",
         action="store_true")
 
