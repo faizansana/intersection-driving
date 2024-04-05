@@ -149,10 +149,10 @@ def load_new_model(args: argparse.Namespace, log_dir: os.path, env: gym.Env):
     GRADIENT_STEPS = -1
     VERBOSE = args.verbose
     policy_kwargs = {
-        "features_extractor_class": CustomCombinedExtractor,
+        # "features_extractor_class": CustomCombinedExtractor,
         "net_arch": [400, 300]
     }
-    policy = "MultiInputPolicy"
+    policy = "CnnPolicy"
 
     # Setup Model
     if args.model == "DDPG":
