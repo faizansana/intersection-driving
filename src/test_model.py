@@ -12,7 +12,7 @@ from train import setup_env
 def parse_arguments():
     argparser = argparse.ArgumentParser(description="Test Agent")
     argparser.add_argument(
-        "modelpath",
+        "-p", "--model-path",
         help="Path to model to test",
         metavar="PATH",
         type=str)
@@ -58,6 +58,10 @@ def parse_arguments():
         default="./custom_carla_gym/src/config_continuous.yaml",
         metavar="PATH",
         type=str)
+    argparser.add_argument(
+        "--r", "--random-model",
+        help="Whether to test a random model",
+        action="store_true")
 
     return argparser
 
@@ -69,19 +73,21 @@ def main():
     # Setup environment
     env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, config_file=args.config_file)
 
-    # Load model
-    if "RecurrentPPO" in args.modelpath:
-        model = RecurrentPPO.load(args.modelpath)
-    elif "PPO" in args.modelpath:
-        model = PPO.load(args.modelpath)
-    elif "DDPG" in args.modelpath:
-        model = DDPG.load(args.modelpath)
-    elif "SAC" in args.modelpath:
-        model = SAC.load(args.modelpath)
-    elif "DQN" in args.modelpath:
-        model = DQN.load(args.modelpath)
-    else:
-        raise ValueError("Model not supported")
+    # Only setup model if random model is not selected
+    if not args.random_model:
+        # Load model
+        if "RecurrentPPO" in args.modelpath:
+            model = RecurrentPPO.load(args.modelpath)
+        elif "PPO" in args.modelpath:
+            model = PPO.load(args.modelpath)
+        elif "DDPG" in args.modelpath:
+            model = DDPG.load(args.modelpath)
+        elif "SAC" in args.modelpath:
+            model = SAC.load(args.modelpath)
+        elif "DQN" in args.modelpath:
+            model = DQN.load(args.modelpath)
+        else:
+            raise ValueError("Model not supported")
 
     # Setup pygame display
     if args.display:
@@ -110,7 +116,10 @@ def main():
             episode_starts = np.zeros((1,), dtype=bool)
 
             while not done:
-                action, lstm_states = model.predict(obs.copy(), state=lstm_states, episode_start=episode_starts, deterministic=True)
+                if args.random_model:
+                    action = env.action_space.sample()
+                else:
+                    action, lstm_states = model.predict(obs.copy(), state=lstm_states, episode_start=episode_starts, deterministic=True)
                 obs, reward, done, _, info = env.step(action)
                 episode_starts = done
 
