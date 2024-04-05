@@ -110,7 +110,7 @@ def main():
             episode_starts = np.zeros((1,), dtype=bool)
 
             while not done:
-                action, lstm_states = model.predict(obs, state=lstm_states, episode_start=episode_starts, deterministic=True)
+                action, lstm_states = model.predict(obs.copy(), state=lstm_states, episode_start=episode_starts, deterministic=True)
                 obs, reward, done, _, info = env.step(action)
                 episode_starts = done
 
