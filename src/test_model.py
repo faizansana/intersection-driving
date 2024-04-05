@@ -17,13 +17,6 @@ def parse_arguments():
         metavar="PATH",
         type=str)
     argparser.add_argument(
-        "-e", "--env",
-        help="Environment to test on. Path of env is appended",
-        default="custom_carla_gym",
-        metavar="NAME",
-        choices=["custom_carla_gym", "gym_carla"],
-        type=str)
-    argparser.add_argument(
         "-v", "--verbose",
         help="Verbosity level",
         default=0,
@@ -71,7 +64,7 @@ def main():
     args = parse_arguments().parse_args()
 
     # Setup environment
-    env = setup_env(env_name=args.env, log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, config_file=args.config_file)
+    env = setup_env(log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, config_file=args.config_file)
 
     # Only setup model if random model is not selected
     if not args.random_model:
