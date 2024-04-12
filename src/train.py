@@ -110,7 +110,7 @@ def load_new_model(args: argparse.Namespace, log_dir: os.path, env: gym.Env):
         # "features_extractor_class": CustomCombinedExtractor,
         "net_arch": [400, 300]
     }
-    policy = "CnnPolicy"
+    policy = "MlpPolicy"
 
     # Setup Model
     if args.model == "DDPG":
