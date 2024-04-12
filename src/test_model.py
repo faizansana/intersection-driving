@@ -69,16 +69,16 @@ def main():
     # Only setup model if random model is not selected
     if not args.random_model:
         # Load model
-        if "RecurrentPPO" in args.modelpath:
-            model = RecurrentPPO.load(args.modelpath)
-        elif "PPO" in args.modelpath:
-            model = PPO.load(args.modelpath)
-        elif "DDPG" in args.modelpath:
-            model = DDPG.load(args.modelpath)
-        elif "SAC" in args.modelpath:
-            model = SAC.load(args.modelpath)
-        elif "DQN" in args.modelpath:
-            model = DQN.load(args.modelpath)
+        if "RecurrentPPO" in args.model_path:
+            model = RecurrentPPO.load(args.model_path)
+        elif "PPO" in args.model_path:
+            model = PPO.load(args.model_path)
+        elif "DDPG" in args.model_path:
+            model = DDPG.load(args.model_path)
+        elif "SAC" in args.model_path:
+            model = SAC.load(args.model_path)
+        elif "DQN" in args.model_path:
+            model = DQN.load(args.model_path)
         else:
             raise ValueError("Model not supported")
 
