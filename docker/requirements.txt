@@ -13,7 +13,7 @@ google-auth==2.23.2
 google-auth-oauthlib==1.0.0
 grpcio==1.59.0
 gymnasium==0.28.1
-idna==3.4
+idna==3.7
 importlib-metadata==6.6.0
 importlib-resources==6.0.0
 jax-jumpy==1.0.0
