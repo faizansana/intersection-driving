@@ -8,11 +8,11 @@ Containerized DRL training architecture for [gymnasium](https://gymnasium.farama
 
 ## DRL Algorithms Supported
 
-- Deep Deterministic Policy Gradient (DDPG)
-- Deep Q-Learning (DQN)
-- Proximal Policy Optimization (PPO)
-- Recurrent PPO
-- Soft Actor Critic (SAC)
+- [Deep Deterministic Policy Gradient (DDPG)](https://spinningup.openai.com/en/latest/algorithms/ddpg.html)
+- [Deep Q-Learning (DQN)](https://arxiv.org/abs/1312.5602)
+- [Proximal Policy Optimization (PPO)](https://arxiv.org/abs/1707.06347)
+- [Recurrent PPO](https://sb3-contrib.readthedocs.io/en/master/modules/ppo_recurrent.html)
+- [Soft Actor Critic (SAC)](https://spinningup.openai.com/en/latest/algorithms/sac.html)
 
 ## System Requirements
 
