@@ -48,7 +48,7 @@ def parse_arguments():
     argparser.add_argument(
         "--config-file",
         help="Path to config file",
-        default="./custom_carla_gym/src/config_continuous.yaml",
+        default="./intersection_carla_gym/src/config_continuous.yaml",
         metavar="PATH",
         type=str)
     argparser.add_argument(

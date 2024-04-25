@@ -51,9 +51,9 @@ def main():
         log_file = f"train_{model_name}.log"
 
         if "DQN" in model_path or "PPO" in model_path:
-            config_file = "./custom_carla_gym/src/config_discrete.yaml"
+            config_file = "./intersection_carla_gym/src/config_discrete.yaml"
         else:
-            config_file = "./custom_carla_gym/src/config_continuous.yaml"
+            config_file = "./intersection_carla_gym/src/config_continuous.yaml"
 
         process = Process(target=multi_train.run_retraining, args=(model_path, f"{args.base_carla_host}-{i+1}", config_file, log_file, args.timesteps))
         processes.append(process)

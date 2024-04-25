@@ -1,3 +1,3 @@
 [submodule "src/custom_carla_gym"]
-	path = src/custom_carla_gym
+	path = src/intersection_carla_gym
 	url = https://github.com/faizansana/intersection-carla-gym.git

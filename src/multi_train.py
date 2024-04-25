@@ -55,7 +55,7 @@ def run_retraining(model_path: str, server_name: str, config_file: str, log_file
         logging.info(f"Failed to resume training for {model_path} with error: {e}")
 
 
-def run_training(model: str, server_name: str, timesteps: int, config_file: str = "./custom_carla_gym/config.yaml"):
+def run_training(model: str, server_name: str, timesteps: int, config_file: str = "./intersection_carla_gym/config.yaml"):
     log_file = f"train_{model}.log"
     command = ["python", "train.py", "-m", model, "-t", str(timesteps), "-c", server_name, "-v", "1", "--config-file", config_file]
 
@@ -84,9 +84,9 @@ def main():
     for i in range(total_runs):
         model = models[i]
         if model == "DQN" or model == "PPO" or model == "RecurrentPPO":
-            config_file = "./custom_carla_gym/src/config_discrete.yaml"
+            config_file = "./intersection_carla_gym/src/config_discrete.yaml"
         else:
-            config_file = "./custom_carla_gym/src/config_continuous.yaml"
+            config_file = "./intersection_carla_gym/src/config_continuous.yaml"
 
         process = Process(target=run_training, args=(model, f"{args.base_carla_host}-{i+1}", args.timesteps, config_file))
         processes.append(process)

@@ -6,11 +6,7 @@ from multiprocessing import Process
 logging.basicConfig(filename='multitest.log', level=logging.INFO, format="%(asctime)s %(message)s")
 
 model_paths = [
-    "Training/Models/DDPG/2023-05-22_20-29-21/best_model.zip",
-    "Training/Models/DQN/2023-05-22_20-29-21/best_model.zip",
-    "Training/Models/PPO/2023-05-22_20-29-21/best_model.zip",
-    "Training/Models/RecurrentPPO/2023-05-22_20-29-21/best_model.zip",
-    "Training/Models/SAC/2023-05-22_20-29-21/best_model.zip"]
+    "/home/docker/src/src/Training/Models/PPO/2024-04-09_21-53-35/best_model.zip"]
 
 assert len(model_paths) <= 5, "Not enough servers for all models"
 total_runs = len(model_paths)
@@ -18,7 +14,7 @@ base_server_name = "intersection-driving-carla_server"
 base_tm_port = 10000
 
 
-def run_test(model_path: str, server_name: str, config_file: str = "./custom_carla_gym/config.yaml"):
+def run_test(model_path: str, server_name: str, config_file: str = "./intersection_carla_gym/config.yaml"):
     directory = os.path.dirname(model_path)
     log_file = os.path.join(directory, "test_model.log")
 
@@ -37,9 +33,9 @@ try:
     for i in range(total_runs):
         model_path = model_paths[i]
         if "DQN" in model_path or "PPO" in model_path:
-            config_file = "./custom_carla_gym/src/config_discrete.yaml"
+            config_file = "./intersection_carla_gym/src/config_discrete.yaml"
         else:
-            config_file = "./custom_carla_gym/src/config_continuous.yaml"
+            config_file = "./intersection_carla_gym/src/config_continuous.yaml"
 
         process = Process(target=run_test, args=(model_path, f"{base_server_name}-{i+1}", config_file))
         processes.append(process)

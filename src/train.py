@@ -50,7 +50,7 @@ def parse_arguments():
     argparser.add_argument(
         "--config-file",
         help="Path to config file",
-        default="./custom_carla_gym/src/config_discrete.yaml",
+        default="./intersection_carla_gym/src/config_discrete.yaml",
         metavar="PATH",
         type=str)
     argparser.add_argument(
@@ -80,10 +80,10 @@ def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.
     model.save(os.path.join(model_dir, "final_model"))
 
 
-def setup_env(log_dir: str, carla_host: str, carla_port: int, config_file: str = "./custom_carla_gym/config.yaml") -> gym.Env:
+def setup_env(log_dir: str, carla_host: str, carla_port: int, config_file: str = "./intersection_carla_gym/config.yaml") -> gym.Env:
     """Setup environment"""
-    sys.path.append("./custom_carla_gym/src")
-    from custom_carla_gym.src.carla_env_custom import CarlaEnv
+    sys.path.append("./intersection_carla_gym/src")
+    from intersection_carla_gym.src.carla_env_custom import CarlaEnv
     cfg = yaml.safe_load(open(config_file))
     env = CarlaEnv(cfg=cfg, host=carla_host, port=carla_port)
 
