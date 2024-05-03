@@ -63,7 +63,7 @@ sympy==1.12
 tensorboard==2.14.0
 tensorboard-data-server==0.7.1
 torch==2.0.1
-tqdm==4.66.1
+tqdm==4.66.3
 triton==2.0.0
 typing_extensions==4.6.3
 tzdata==2023.3
