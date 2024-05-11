@@ -6,7 +6,9 @@ import yaml
 
 import multi_train
 
-logging.basicConfig(filename='multi_retrain.log', level=logging.INFO, format="%(asctime)s %(message)s")
+logging.basicConfig(
+    filename="multi_retrain.log", level=logging.INFO, format="%(asctime)s %(message)s"
+)
 
 
 def get_model_name(model_path: str) -> str:
@@ -16,30 +18,36 @@ def get_model_name(model_path: str) -> str:
 def parse_arguments():
     argparser = argparse.ArgumentParser(description="Retrain Multiple Agents")
     argparser.add_argument(
-        "-f", "--file",
+        "-f",
+        "--file",
         help="Path to YAML file containing paths to models to retrain",
         metavar="FILEPATH",
         default="Training/retrain_models.yaml",
-        type=str)
+        type=str,
+    )
     argparser.add_argument(
-        "-c", "--base-carla-host",
+        "-c",
+        "--base-carla-host",
         help="DNS name of base CARLA host",
         default="intersection-driving-carla_server",
         metavar="SERVER_NAME",
-        type=str)
+        type=str,
+    )
     argparser.add_argument(
-        "-t", "--timesteps",
+        "-t",
+        "--timesteps",
         help="Number of timesteps to train for",
         default=1500000,
         metavar="N",
-        type=int)
+        type=int,
+    )
 
     return argparser
 
 
 def main():
     args = parse_arguments().parse_args()
-    with open(args.file, 'r') as f:
+    with open(args.file, "r") as f:
         model_paths = yaml.safe_load(f)
     total_runs = len(model_paths)
 
@@ -55,7 +63,16 @@ def main():
         else:
             config_file = "./intersection_carla_gym/src/config_continuous.yaml"
 
-        process = Process(target=multi_train.run_retraining, args=(model_path, f"{args.base_carla_host}-{i+1}", config_file, log_file, args.timesteps))
+        process = Process(
+            target=multi_train.run_retraining,
+            args=(
+                model_path,
+                f"{args.base_carla_host}-{i+1}",
+                config_file,
+                log_file,
+                args.timesteps,
+            ),
+        )
         processes.append(process)
         process.start()
 

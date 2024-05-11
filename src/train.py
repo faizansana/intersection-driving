@@ -12,62 +12,81 @@ from stable_baselines3 import DDPG, DQN, PPO, SAC
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.monitor import Monitor
 
-from train_config import SaveOnBestTrainingRewardCallback, CustomCombinedExtractor, SaveLatestModelCallback
+from train_config import (CustomCombinedExtractor, SaveLatestModelCallback,
+                          SaveOnBestTrainingRewardCallback)
 
 
 def parse_arguments():
     argparser = argparse.ArgumentParser(description="Train Agent")
     argparser.add_argument(
-        "-m", "--model",
+        "-m",
+        "--model",
         help="Model to train",
         default="DDPG",
         metavar="NAME",
-        choices=["DDPG", "PPO", "RecurrentPPO", "SAC", "DQN"])
+        choices=["DDPG", "PPO", "RecurrentPPO", "SAC", "DQN"],
+    )
     argparser.add_argument(
-        "-t", "--timesteps",
+        "-t",
+        "--timesteps",
         help="Number of timesteps to train for",
         default=100000,
         metavar="N",
-        type=int)
+        type=int,
+    )
     argparser.add_argument(
-        "-v", "--verbose",
-        help="Verbosity level",
-        default=0,
-        metavar="N",
-        type=int)
+        "-v", "--verbose", help="Verbosity level", default=0, metavar="N", type=int
+    )
     argparser.add_argument(
-        "-c", "--carla-host",
+        "-c",
+        "--carla-host",
         help="IP Address of CARLA host",
         default="carla_server",
         metavar="IP",
-        type=str)
+        type=str,
+    )
     argparser.add_argument(
-        "-p", "--carla-port",
+        "-p",
+        "--carla-port",
         help="Port of CARLA host",
         default="2000",
         metavar="PORT",
-        type=int)
+        type=int,
+    )
     argparser.add_argument(
         "--config-file",
         help="Path to config file",
         default="./intersection_carla_gym/src/config_discrete.yaml",
         metavar="PATH",
-        type=str)
+        type=str,
+    )
     argparser.add_argument(
         "--model-path",
         help="Path to load model for RETRAINING",
         default=None,
         metavar="PATH",
-        type=str)
+        type=str,
+    )
 
     return argparser
 
 
-def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.path, check_freq: int = 2000, verbose: int = 0) -> None:
+def train(
+    model: BaseAlgorithm,
+    timesteps: int,
+    model_dir: os.path,
+    log_dir: os.path,
+    check_freq: int = 2000,
+    verbose: int = 0,
+) -> None:
     """Train an agent on a given environment for a given number of timesteps"""
     # Create callback
-    best_model_callback = SaveOnBestTrainingRewardCallback(check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose)
-    latest_model_callback = SaveLatestModelCallback(check_freq=10000, save_path=model_dir, verbose=verbose)
+    best_model_callback = SaveOnBestTrainingRewardCallback(
+        check_freq=check_freq, log_dir=log_dir, save_path=model_dir, verbose=verbose
+    )
+    latest_model_callback = SaveLatestModelCallback(
+        check_freq=10000, save_path=model_dir, verbose=verbose
+    )
     # Check if retraining
     if model.num_timesteps > 0:
         timesteps = timesteps - model.num_timesteps
@@ -75,15 +94,26 @@ def train(model: BaseAlgorithm, timesteps: int, model_dir: os.path, log_dir: os.
         if timesteps < 0:
             return
     # Train
-    model.learn(total_timesteps=timesteps, callback=[best_model_callback, latest_model_callback], progress_bar=True, reset_num_timesteps=False)
+    model.learn(
+        total_timesteps=timesteps,
+        callback=[best_model_callback, latest_model_callback],
+        progress_bar=True,
+        reset_num_timesteps=False,
+    )
     # Save final model
     model.save(os.path.join(model_dir, "final_model"))
 
 
-def setup_env(log_dir: str, carla_host: str, carla_port: int, config_file: str = "./intersection_carla_gym/config.yaml") -> gym.Env:
+def setup_env(
+    log_dir: str,
+    carla_host: str,
+    carla_port: int,
+    config_file: str = "./intersection_carla_gym/config.yaml",
+) -> gym.Env:
     """Setup environment"""
     sys.path.append("./intersection_carla_gym/src")
     from intersection_carla_gym.src.carla_env_custom import CarlaEnv
+
     cfg = yaml.safe_load(open(config_file))
     env = CarlaEnv(cfg=cfg, host=carla_host, port=carla_port)
 
@@ -108,63 +138,72 @@ def load_new_model(args: argparse.Namespace, log_dir: os.path, env: gym.Env):
     VERBOSE = args.verbose
     policy_kwargs = {
         "features_extractor_class": CustomCombinedExtractor,
-        "net_arch": [400, 300]
+        "net_arch": [400, 300],
     }
     policy = "MultiInputPolicy"
 
     # Setup Model
     if args.model == "DDPG":
-        model = DDPG(policy,
-                     env,
-                     learning_rate=LEARNING_RATE,
-                     policy_kwargs=policy_kwargs,
-                     buffer_size=BUFFER_SIZE,
-                     learning_starts=LEARNING_STARTS,
-                     gamma=GAMMA,
-                     train_freq=TRAIN_FREQ,
-                     gradient_steps=GRADIENT_STEPS,
-                     verbose=VERBOSE,
-                     tensorboard_log=log_dir)
+        model = DDPG(
+            policy,
+            env,
+            learning_rate=LEARNING_RATE,
+            policy_kwargs=policy_kwargs,
+            buffer_size=BUFFER_SIZE,
+            learning_starts=LEARNING_STARTS,
+            gamma=GAMMA,
+            train_freq=TRAIN_FREQ,
+            gradient_steps=GRADIENT_STEPS,
+            verbose=VERBOSE,
+            tensorboard_log=log_dir,
+        )
     elif args.model == "PPO":
-        model = PPO(policy,
-                    env,
-                    learning_rate=LEARNING_RATE,
-                    gamma=GAMMA,
-                    policy_kwargs=policy_kwargs,
-                    verbose=VERBOSE,
-                    tensorboard_log=log_dir)
+        model = PPO(
+            policy,
+            env,
+            learning_rate=LEARNING_RATE,
+            gamma=GAMMA,
+            policy_kwargs=policy_kwargs,
+            verbose=VERBOSE,
+            tensorboard_log=log_dir,
+        )
     elif args.model == "SAC":
-        model = SAC(policy,
-                    env,
-                    learning_rate=LEARNING_RATE,
-                    buffer_size=BUFFER_SIZE,
-                    learning_starts=LEARNING_STARTS,
-                    gamma=GAMMA,
-                    policy_kwargs=policy_kwargs,
-                    train_freq=TRAIN_FREQ,
-                    gradient_steps=GRADIENT_STEPS,
-                    verbose=VERBOSE,
-                    tensorboard_log=log_dir)
+        model = SAC(
+            policy,
+            env,
+            learning_rate=LEARNING_RATE,
+            buffer_size=BUFFER_SIZE,
+            learning_starts=LEARNING_STARTS,
+            gamma=GAMMA,
+            policy_kwargs=policy_kwargs,
+            train_freq=TRAIN_FREQ,
+            gradient_steps=GRADIENT_STEPS,
+            verbose=VERBOSE,
+            tensorboard_log=log_dir,
+        )
     elif args.model == "RecurrentPPO":
-        model = RecurrentPPO("MultiInputLstmPolicy",
-                             env,
-                             learning_rate=LEARNING_RATE,
-                             gamma=GAMMA,
-                             tensorboard_log=log_dir,
-                             verbose=VERBOSE,
-                             policy_kwargs=policy_kwargs
-                             )
+        model = RecurrentPPO(
+            "MultiInputLstmPolicy",
+            env,
+            learning_rate=LEARNING_RATE,
+            gamma=GAMMA,
+            tensorboard_log=log_dir,
+            verbose=VERBOSE,
+            policy_kwargs=policy_kwargs,
+        )
     elif args.model == "DQN":
-        model = DQN(policy,
-                    env,
-                    learning_rate=LEARNING_RATE,
-                    buffer_size=BUFFER_SIZE,
-                    learning_starts=LEARNING_STARTS,
-                    gamma=GAMMA,
-                    train_freq=TRAIN_FREQ,
-                    gradient_steps=GRADIENT_STEPS,
-                    verbose=VERBOSE,
-                    tensorboard_log=log_dir)
+        model = DQN(
+            policy,
+            env,
+            learning_rate=LEARNING_RATE,
+            buffer_size=BUFFER_SIZE,
+            learning_starts=LEARNING_STARTS,
+            gamma=GAMMA,
+            train_freq=TRAIN_FREQ,
+            gradient_steps=GRADIENT_STEPS,
+            verbose=VERBOSE,
+            tensorboard_log=log_dir,
+        )
 
     return model
 
@@ -196,7 +235,12 @@ def main():
         print("Loading model from", args.model_path)
     else:
         # Create model and log directory
-        model_dir = os.path.join("Training", "Models", args.model, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+        model_dir = os.path.join(
+            "Training",
+            "Models",
+            args.model,
+            datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S"),
+        )
         print("TRAINING MODEL:", args.model)
 
     log_dir = os.path.join(model_dir, "logs")
@@ -227,5 +271,4 @@ def main():
 
 
 if __name__ == "__main__":
-
     main()
