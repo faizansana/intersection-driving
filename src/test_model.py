@@ -12,49 +12,53 @@ from train import setup_env
 def parse_arguments():
     argparser = argparse.ArgumentParser(description="Test Agent")
     argparser.add_argument(
-        "-m", "--model-path",
-        help="Path to model to test",
-        metavar="PATH",
-        type=str)
+        "-m", "--model-path", help="Path to model to test", metavar="PATH", type=str
+    )
     argparser.add_argument(
-        "-v", "--verbose",
-        help="Verbosity level",
-        default=0,
-        metavar="N",
-        type=int)
+        "-v", "--verbose", help="Verbosity level", default=0, metavar="N", type=int
+    )
     argparser.add_argument(
-        "-c", "--carla-host",
+        "-c",
+        "--carla-host",
         help="IP Address of CARLA host",
         default="carla_server",
         metavar="IP",
-        type=str)
+        type=str,
+    )
     argparser.add_argument(
-        "-p", "--carla-port",
+        "-p",
+        "--carla-port",
         help="Port of CARLA host",
         default="2000",
         metavar="PORT",
-        type=int)
+        type=int,
+    )
     argparser.add_argument(
         "--episodes",
         help="Number of episodes to test for",
         default=100,
         metavar="N",
-        type=int)
+        type=int,
+    )
     argparser.add_argument(
-        "-d", "--display",
+        "-d",
+        "--display",
         help="Whether to display the environment",
-        action="store_true"
+        action="store_true",
     )
     argparser.add_argument(
         "--config-file",
         help="Path to config file",
         default="./intersection_carla_gym/src/config_continuous.yaml",
         metavar="PATH",
-        type=str)
+        type=str,
+    )
     argparser.add_argument(
-        "-r", "--random-model",
+        "-r",
+        "--random-model",
         help="Whether to test a random model",
-        action="store_true")
+        action="store_true",
+    )
 
     return argparser
 
@@ -64,7 +68,12 @@ def main():
     args = parse_arguments().parse_args()
 
     # Setup environment
-    env = setup_env(log_dir="", carla_host=args.carla_host, carla_port=args.carla_port, config_file=args.config_file)
+    env = setup_env(
+        log_dir="",
+        carla_host=args.carla_host,
+        carla_port=args.carla_port,
+        config_file=args.config_file,
+    )
 
     # Only setup model if random model is not selected
     if not args.random_model:
@@ -86,8 +95,8 @@ def main():
     if args.display:
         pygame.init()
         display = pygame.display.set_mode(
-            (1024, 1024),
-            pygame.HWSURFACE | pygame.DOUBLEBUF)
+            (1024, 1024), pygame.HWSURFACE | pygame.DOUBLEBUF
+        )
 
     # Setup metrics
     pedestrian_collision = 0
@@ -98,7 +107,6 @@ def main():
 
     # Test model
     try:
-
         for episode in tqdm(range(args.episodes)):
             obs, info = env.reset()
             done = False
@@ -112,7 +120,12 @@ def main():
                 if args.random_model:
                     action = env.action_space.sample()
                 else:
-                    action, lstm_states = model.predict(obs.copy(), state=lstm_states, episode_start=episode_starts, deterministic=True)
+                    action, lstm_states = model.predict(
+                        obs.copy(),
+                        state=lstm_states,
+                        episode_start=episode_starts,
+                        deterministic=True,
+                    )
                 obs, reward, done, _, info = env.step(action)
                 episode_starts = done
 
@@ -144,7 +157,9 @@ def main():
     print("Episodes:", episode)
     print(f"Percentage of crashes: {round(crashed / episode, 4) * 100}%")
     if crashed != 0:
-        print(f"Percentage of pedestrian collisions in total collisions: {round(pedestrian_collision / crashed, 2) * 100}%")
+        print(
+            f"Percentage of pedestrian collisions in total collisions: {round(pedestrian_collision / crashed, 2) * 100}%"
+        )
     else:
         print("Percentage of pedestrian collisions in total collisions: 0%")
     print("Episode Mean Length:", round(episode_length / episode, 2))
