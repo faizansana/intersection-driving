@@ -23,10 +23,10 @@ The following are the requirements for running this repository using the provide
 
 ## Setup
 
-1. Clone the repository
+1. Clone the repository with submodules.
 
     ```
-    git clone https://github.com/faizansana/intersection-driving.git
+    git clone --recursive https://github.com/faizansana/intersection-driving.git
     ```
 
 2. Run the `dev_config.sh` file to set the environment variables for docker.
